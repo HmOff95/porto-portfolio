@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jane Doe Photography - Editorial Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-logo">
+                <span class="logo-text">Jane Doe Photography</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#portfolio" class="nav-link">Portfolio</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-image-container">
+            <div class="hero-overlay"></div>
+            <h1 class="hero-title">Capturing Moments That Last Forever</h1>
+        </div>
+        <div class="hero-caption">
+            <p class="photographer-name">Jane Doe</p>
+            <p class="photographer-tagline">Editorial & Fine Art Photography</p>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="portfolio" class="portfolio">
+        <div class="section-header">
+            <h2 class="section-title">Portfolio</h2>
+        </div>
+        <div class="gallery-grid">
+            <div class="gallery-item" style="grid-row: span 2;">
+                <div class="gallery-placeholder"></div>
+                <div class="gallery-label">Wedding</div>
+            </div>
+            <div class="gallery-item">
+                <div class="gallery-placeholder"></div>
+                <div class="gallery-label">Portrait</div>
+            </div>
+            <div class="gallery-item">
+                <div class="gallery-placeholder"></div>
+                <div class="gallery-label">Commercial</div>
+            </div>
+            <div class="gallery-item">
+                <div class="gallery-placeholder"></div>
+                <div class="gallery-label">Travel</div>
+            </div>
+            <div class="gallery-item" style="grid-row: span 2;">
+                <div class="gallery-placeholder"></div>
+                <div class="gallery-label">Event</div>
+            </div>
+            <div class="gallery-item">
+                <div class="gallery-placeholder"></div>
+                <div class="gallery-label">Street</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="about-container">
+            <div class="about-image">
+                <div class="about-placeholder"></div>
+            </div>
+            <div class="about-content">
+                <h2 class="about-title">About Jane</h2>
+                <div class="about-divider"></div>
+                <p class="about-text">
+                    With over 15 years of experience in editorial and fine art photography, Jane Doe has built a reputation for capturing the raw beauty and emotion of her subjects. Her work has been featured in prestigious publications and galleries worldwide, blending technical excellence with an artistic vision that transcends conventional portraiture.
+                </p>
+                <p class="about-text">
+                    Specializing in intimate moments and dramatic compositions, Jane believes every frame tells a story. Her approach is collaborative and intuitive, working closely with clients to understand their vision and bringing it to life through her distinctive visual language.
+                </p>
+                <div class="specializations">
+                    <p class="specialization-item">• Editorial Photography</p>
+                    <p class="specialization-item">• Portrait Sessions</p>
+                    <p class="specialization-item">• Fine Art Prints</p>
+                    <p class="specialization-item">• Wedding Documentation</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services">
+        <div class="section-header">
+            <h2 class="section-title" style="margin-bottom: 3rem;">Services</h2>
+        </div>
+        <div class="services-container">
+            <div class="service-card">
+                <div class="service-icon">📸</div>
+                <h3 class="service-name">Portrait Sessions</h3>
+                <p class="service-description">Professional portrait photography tailored to your style and vision. Studio or location shoots available.</p>
+                <p class="service-price">From $350</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">💍</div>
+                <h3 class="service-name">Wedding Photography</h3>
+                <p class="service-description">Comprehensive wedding coverage capturing the intimate and grand moments of your special day.</p>
+                <p class="service-price">From $2,500</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">🎬</div>
+                <h3 class="service-name">Commercial Work</h3>
+                <p class="service-description">High-end commercial photography for brands, publications, and advertising campaigns.</p>
+                <p class="service-price">Custom Quote</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="contact-container">
+            <h2 class="contact-title">Get In Touch</h2>
+            <form class="contact-form" id="contactForm">
+                <input type="text" placeholder="Your Name" required class="form-input">
+                <input type="email" placeholder="Your Email" required class="form-input">
+                <textarea placeholder="Your Message" rows="6" required class="form-input"></textarea>
+                <button type="submit" class="submit-btn">Send</button>
+                <p class="form-success" id="successMessage" style="display: none;">Thank you for reaching out. I'll be in touch soon.</p>
+            </form>
+            <div class="contact-info">
+                <p><strong>Email:</strong> jane@janedoephotography.com</p>
+                <p><strong>Instagram:</strong> @janedoephotography</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 Jane Doe Photography. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

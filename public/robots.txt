@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /trap1
+Disallow: /trap2
+Disallow: /trap3
+Disallow: /admin
+Disallow: /api
