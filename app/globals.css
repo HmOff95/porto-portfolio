@@ -1235,3 +1235,66 @@ html.light-mode .navbar {
   color: #C9A800;
   border: 1px solid rgba(247, 223, 30, 0.3);
 }
+
+/* ===== EXPERIENCE SECTION ===== */
+.experience {
+    padding: 120px 20px;
+    background: var(--dark-alt);
+}
+
+.experience h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: var(--text);
+    position: relative;
+    text-align: left;
+    padding-bottom: 1.5rem;
+    display: inline-block;
+}
+
+.experience h2::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+}
+
+/* TABS */
+.tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text);
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    font-family: 'Space Grotesk', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: -1px;
+}
+
+.tab-btn:hover {
+    color: var(--primary);
+}
+
+.tab-btn.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    font-weight: 700;
+}
+
+.experience-content {
+    max-width: 900px;
+}
