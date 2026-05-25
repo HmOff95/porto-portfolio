@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import emailjs from '@emailjs/browser';
 
 export default function Home() {
   const [currentLanguage, setCurrentLanguage] = useState('id');
@@ -99,13 +100,22 @@ export default function Home() {
     window.open(url, '_blank');
   };
 
-  const handleContactSubmit = (e) => {
+  const handleContactSubmit = async (e) => {
     e.preventDefault();
-    const message = currentLanguage === 'en' 
-      ? 'Thank you! Your message has been sent.' 
-      : 'Terima kasih! Pesan Anda telah dikirim.';
-    alert(message);
-    e.target.reset();
+    const form = e.target;
+
+    try {
+      await emailjs.sendForm(
+        'service_rabzii1',
+        'template_l1xpwnu',
+        form,
+        '7t5hAL3jXCVvBsCZI'
+      );
+      alert(t('Terima kasih! Pesan Anda telah dikirim.', 'Thank you! Your message has been sent.'));
+      form.reset();
+    } catch (error) {
+      alert(t('Gagal mengirim pesan. Coba lagi nanti.', 'Failed to send message. Please try again later.'));
+    }
   };
 
   return (
@@ -126,7 +136,7 @@ export default function Home() {
 
           <div className="navbar-actions">
             <button className="language-toggle" onClick={toggleLanguage} title="Toggle Language">
-              <span className="language-text">{currentLanguage === 'id' ? 'EN' : 'ID'}</span>
+              <span className="language-text">{currentLanguage === 'id' ? 'ID' : 'EN'}</span>
             </button>
             <button className="theme-toggle" onClick={toggleTheme} title="Toggle Dark Mode">
               <span className="theme-icon">{isLightMode ? '☀️' : '🌙'}</span>
@@ -345,9 +355,9 @@ export default function Home() {
             <p>{t('Siap untuk diskusi atau kolaborasi? Hubungi saya melalui form di bawah ini!', 'Ready for discussion or collaboration? Contact me through the form below!')}</p>
           </div>
           <form className="contact-form" id="contactForm" onSubmit={handleContactSubmit}>
-            <input type="text" placeholder={t('Nama Anda', 'Your Name')} required />
-            <input type="email" placeholder={t('Email Anda', 'Your Email')} required />
-            <textarea placeholder={t('Pesan Anda', 'Your Message')} rows="5" required></textarea>
+            <input type="text" name="name" placeholder={t('Nama Anda', 'Your Name')} required />
+            <input type="email" name="email" placeholder={t('Email Anda', 'Your Email')} required />
+            <textarea name="message" placeholder={t('Pesan Anda', 'Your Message')} rows="5" required></textarea>
             <button type="submit" className="btn btn-primary">{t('Kirim Pesan', 'Send Message')}</button>
           </form>
         </div>
