@@ -263,6 +263,9 @@ export default function Home() {
                 </div>
               </div>
               <div className="project-content">
+                <div className="template-tags">
+                  <span className="template-tag tag-html">HTML</span>
+                </div>
                 <h3>Porto</h3>
                 <p data-en="A dark minimal portfolio template with violet accents and smooth animations." data-id="Template portofolio gelap minimalis dengan aksen violet dan animasi halus.">Template portofolio gelap minimalis dengan aksen violet dan animasi halus.</p>
                 <button className="btn btn-secondary" onClick={() => handleProjectPreviewClick('/WebTemplate/FirstTemplate/index.html')}>
@@ -287,6 +290,11 @@ export default function Home() {
                 </div>
               </div>
               <div className="project-content">
+                <div className="template-tags">
+                  <span className="template-tag tag-html">HTML</span>
+                  <span className="template-tag tag-css">CSS</span>
+                  <span className="template-tag tag-js">JS</span>
+                </div>
                 <h3>Lumière</h3>
                 <p data-en="A classic elegant photography portfolio template with warm tones and serif typography." data-id="Template portofolio fotografi klasik elegan dengan warna hangat dan tipografi serif.">Template portofolio fotografi klasik elegan dengan warna hangat dan tipografi serif.</p>
                 <button className="btn btn-secondary" onClick={() => handleProjectPreviewClick('/WebTemplate/PhotographyPortfolio/index.html')}>

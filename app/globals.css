@@ -1200,3 +1200,38 @@ html.light-mode .navbar {
     gap: 1rem;
   }
 }
+
+/* ===== TEMPLATE TAGS ===== */
+.template-tags {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.template-tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.tag-html {
+  background: rgba(228, 77, 38, 0.15);
+  color: #E44D26;
+  border: 1px solid rgba(228, 77, 38, 0.3);
+}
+
+.tag-css {
+  background: rgba(38, 77, 228, 0.15);
+  color: #264DE4;
+  border: 1px solid rgba(38, 77, 228, 0.3);
+}
+
+.tag-js {
+  background: rgba(247, 223, 30, 0.15);
+  color: #C9A800;
+  border: 1px solid rgba(247, 223, 30, 0.3);
+}
