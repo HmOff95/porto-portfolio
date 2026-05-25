@@ -5,6 +5,10 @@ import { useState, useEffect } from 'react';
 export default function Home() {
   const [currentLanguage, setCurrentLanguage] = useState('id');
   const [isLightMode, setIsLightMode] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  const closeSidebar = () => setIsSidebarOpen(false);
 
   useEffect(() => {
     const savedLanguage = localStorage.getItem('language') || 'id';
@@ -116,12 +120,15 @@ export default function Home() {
       <nav className="navbar">
         <div className="container">
           <div className="nav-brand">Haikal</div>
-          <ul className="nav-menu">
+          
+          {/* Desktop menu */}
+          <ul className="nav-menu desktop-menu">
             <li><a href="#home" data-en="Home" data-id="Home">Home</a></li>
             <li><a href="#about" data-en="About" data-id="Tentang">Tentang</a></li>
             <li><a href="#projects" data-en="Projects" data-id="Proyek">Proyek</a></li>
             <li><a href="#contact" data-en="Contact" data-id="Kontak">Kontak</a></li>
           </ul>
+
           <div className="navbar-actions">
             <button className="language-toggle" onClick={toggleLanguage} title="Toggle Language">
               <span className="language-text">{currentLanguage === 'id' ? 'ID' : 'EN'}</span>
@@ -129,9 +136,29 @@ export default function Home() {
             <button className="theme-toggle" onClick={toggleTheme} title="Toggle Dark Mode">
               <span className="theme-icon">{isLightMode ? '☀️' : '🌙'}</span>
             </button>
+            {/* Hamburger - mobile only */}
+            <button className="hamburger" onClick={toggleSidebar} aria-label="Menu">
+              <span className={`hamburger-line ${isSidebarOpen ? 'open' : ''}`}></span>
+              <span className={`hamburger-line ${isSidebarOpen ? 'open' : ''}`}></span>
+              <span className={`hamburger-line ${isSidebarOpen ? 'open' : ''}`}></span>
+            </button>
           </div>
         </div>
       </nav>
+
+      {/* Mobile Sidebar */}
+      {isSidebarOpen && (
+        <div className="sidebar-overlay" onClick={closeSidebar}></div>
+      )}
+      <div className={`sidebar ${isSidebarOpen ? 'sidebar-open' : ''}`}>
+        <button className="sidebar-close" onClick={closeSidebar}>✕</button>
+        <ul className="sidebar-menu">
+          <li><a href="#home" onClick={closeSidebar} data-en="Home" data-id="Home">Home</a></li>
+          <li><a href="#about" onClick={closeSidebar} data-en="About" data-id="Tentang">Tentang</a></li>
+          <li><a href="#projects" onClick={closeSidebar} data-id="Proyek" data-en="Projects">Proyek</a></li>
+          <li><a href="#contact" onClick={closeSidebar} data-en="Contact" data-id="Kontak">Kontak</a></li>
+        </ul>
+      </div>
 
       {/* Hero Section */}
       <section id="home" className="hero">
@@ -226,8 +253,14 @@ export default function Home() {
                   scrolling="no" 
                   tabIndex="-1"
                   className="preview-iframe"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.background = 'var(--card-bg)';
+                  }}
                 />
-                <div className="preview-overlay" onClick={() => handleProjectPreviewClick('/WebTemplate/FirstTemplate/index.html')}></div>
+                <div className="preview-overlay" onClick={() => handleProjectPreviewClick('/WebTemplate/FirstTemplate/index.html')}>
+                  <span className="preview-fallback">Click to Preview →</span>
+                </div>
               </div>
               <div className="project-content">
                 <h3>Porto</h3>
@@ -244,8 +277,14 @@ export default function Home() {
                   scrolling="no" 
                   tabIndex="-1"
                   className="preview-iframe"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.background = 'var(--card-bg)';
+                  }}
                 />
-                <div className="preview-overlay" onClick={() => handleProjectPreviewClick('/WebTemplate/PhotographyPortfolio/index.html')}></div>
+                <div className="preview-overlay" onClick={() => handleProjectPreviewClick('/WebTemplate/PhotographyPortfolio/index.html')}>
+                  <span className="preview-fallback">Click to Preview →</span>
+                </div>
               </div>
               <div className="project-content">
                 <h3>Lumière</h3>
