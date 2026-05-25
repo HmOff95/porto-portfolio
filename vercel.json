@@ -1,4 +1,10 @@
 {
+  "rewrites": [
+    {
+      "source": "/WebTemplate/(.*)",
+      "destination": "/WebTemplate/$1"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
