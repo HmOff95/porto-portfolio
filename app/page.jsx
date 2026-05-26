@@ -278,7 +278,7 @@ export default function Home() {
                 <div className="experience-doc">
                   <p className="doc-label">{t('Dokumentasi', 'Documentation')}</p>
                   <img
-                    src="/public/Prop/pkl-doc.png"
+                    src="/Prop/pkl-doc.png"
                     alt={t('Dokumentasi PKL - Prototype Auto Scoring', 'PKL Documentation - Auto Scoring Prototype')}
                     className="experience-doc-img"
                   />
