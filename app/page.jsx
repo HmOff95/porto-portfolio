@@ -8,6 +8,8 @@ export default function Home() {
   const [isLightMode, setIsLightMode] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeExperienceTab, setActiveExperienceTab] = useState('pkl');
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxSrc, setLightboxSrc] = useState('');
   
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const closeSidebar = () => setIsSidebarOpen(false);
@@ -281,6 +283,7 @@ export default function Home() {
                     src="/Prop/pkl-doc.png"
                     alt={t('Dokumentasi PKL - Prototype Auto Scoring', 'PKL Documentation - Auto Scoring Prototype')}
                     className="experience-doc-img"
+                    onClick={() => { setLightboxSrc('/Prop/pkl-doc.png'); setLightboxOpen(true); }}
                   />
                 </div>
               </div>
@@ -377,6 +380,16 @@ export default function Home() {
           <p>&copy; 2026 Muhammad Haikal Mahardika. <span>{t('Semua hak dilindungi.', 'All rights reserved.')}</span></p>
         </div>
       </footer>
+
+      {/* Lightbox Overlay */}
+      {lightboxOpen && (
+        <div className="lightbox-overlay" onClick={() => setLightboxOpen(false)}>
+          <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
+            <button className="lightbox-close" onClick={() => setLightboxOpen(false)}>✕</button>
+            <img src={lightboxSrc} alt="Documentation" className="lightbox-img" />
+          </div>
+        </div>
+      )}
 
       {/* Honeypot traps - hidden from users */}
       <div style={{position:'absolute', left:'-9999px', width:'1px', height:'1px', overflow:'hidden'}} aria-hidden="true">
