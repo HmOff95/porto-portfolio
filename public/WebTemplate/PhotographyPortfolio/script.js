@@ -52,3 +52,32 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
         successMessage.style.display = 'none';
     }, 5000);
 });
+
+// ====================
+// SIDEBAR TOGGLE
+// ====================
+
+const hamburger = document.getElementById('hamburger');
+const sidebar = document.getElementById('sidebar');
+const sidebarOverlay = document.getElementById('sidebarOverlay');
+const sidebarClose = document.getElementById('sidebarClose');
+
+function openSidebar() {
+    sidebar.classList.add('open');
+    sidebarOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeSidebar() {
+    sidebar.classList.remove('open');
+    sidebarOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+hamburger.addEventListener('click', openSidebar);
+sidebarClose.addEventListener('click', closeSidebar);
+sidebarOverlay.addEventListener('click', closeSidebar);
+
+document.querySelectorAll('.sidebar-link').forEach(link => {
+    link.addEventListener('click', closeSidebar);
+});

@@ -113,6 +113,14 @@
             overflow-y: auto;
         }
 
+        .intro-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(13,13,13,0.75) 0%, rgba(13,13,13,0.4) 100%);
+            z-index: 0;
+        }
+
         .intro-section::-webkit-scrollbar {
             width: 6px;
         }
@@ -126,6 +134,11 @@
             border-radius: 3px;
         }
 
+        .intro-content {
+            position: relative;
+            z-index: 1;
+        }
+
         .intro-content h1 {
             font-size: 3.5rem;
             font-weight: 700;
@@ -136,7 +149,7 @@
 
         .intro-content .title {
             font-size: 1.25rem;
-            color: var(--text-secondary);
+            color: var(--text-primary);
             margin-bottom: 2rem;
             font-weight: 400;
             text-transform: uppercase;
@@ -155,7 +168,7 @@
 
         .intro-content .bio {
             font-size: 1rem;
-            color: var(--text-secondary);
+            color: var(--text-primary);
             margin-top: 3rem;
             line-height: 1.8;
             max-width: 280px;
@@ -355,6 +368,17 @@
         }
 
         @media (max-width: 640px) {
+            .status-badge {
+                font-size: 0.75rem;
+                padding: 0.4rem 0.9rem;
+                white-space: nowrap;
+            }
+
+            .intro-section {
+                min-height: 60vh;
+                padding: 5rem 1.5rem 3rem;
+            }
+
             .intro-content h1 {
                 font-size: 2rem;
             }
@@ -367,12 +391,27 @@
                 font-size: 2rem;
             }
 
-            .intro-section {
-                padding: 2rem 1.5rem;
+            .content-section {
+                padding: 2.5rem 1.25rem;
             }
 
-            .content-section {
-                padding: 2rem 1.5rem;
+            .project img {
+                height: 180px !important;
+                object-fit: cover !important;
+            }
+
+            .contact-link:hover {
+                padding-left: 0.75rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .intro-content h1 {
+                font-size: 1.75rem;
+            }
+            .status-badge {
+                font-size: 0.7rem;
+                padding: 0.35rem 0.75rem;
             }
         }
     </style>

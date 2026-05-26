@@ -1406,3 +1406,40 @@ html.light-mode .navbar {
 .lightbox-close:hover {
   opacity: 1;
 }
+
+.contact-tagline {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-bottom: 2.5rem;
+}
+
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  width: fit-content;
+}
+
+.contact-link:hover {
+  color: var(--primary);
+}
+
+.contact-link svg {
+  flex-shrink: 0;
+  color: var(--primary);
+}
+
+.contact-info {
+  text-align: left !important;
+}
