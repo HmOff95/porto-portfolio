@@ -1298,3 +1298,49 @@ html.light-mode .navbar {
 .experience-content {
     max-width: 900px;
 }
+
+/* EXPERIENCE CARD DETAILS */
+.experience-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.experience-list li {
+  padding-left: 1.25rem;
+  position: relative;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.experience-list li::before {
+  content: "▸";
+  position: absolute;
+  left: 0;
+  color: var(--primary);
+}
+
+.experience-doc {
+  margin-top: 1.25rem;
+}
+
+.doc-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.6rem;
+}
+
+.experience-doc-img {
+  width: 100%;
+  max-width: 560px;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  display: block;
+}

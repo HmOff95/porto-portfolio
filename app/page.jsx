@@ -263,17 +263,25 @@ export default function Home() {
           {/* Tab Content */}
           <div className="experience-content">
             {activeExperienceTab === 'pkl' && (
-              <div className="education-item slide-in-left">
+              <div className="education-item">
                 <div className="education-header">
-                  <h3>{t('Web Developer Intern', 'Web Developer Intern')}</h3>
-                  <span className="period">Jan 2024 – Mar 2024</span>
+                  <div>
+                    <h3>Praktek Kerja Lapangan</h3>
+                    <p className="institution">{t('Universitas Muhammadiyah Kalimantan Timur', 'Universitas Muhammadiyah Kalimantan Timur')}</p>
+                  </div>
+                  <span className="education-period">Jul 2023 – Okt 2023</span>
                 </div>
-                <p className="institution">PT. Jaringan Lintas Nusa, Samarinda</p>
-                <div className="education-details">
-                  <ul>
-                    <li>{t('Mengembangkan dan memelihara aplikasi web internal menggunakan HTML, CSS, dan JavaScript.', 'Developed and maintained internal web applications using HTML, CSS, and JavaScript.')}</li>
-                    <li>{t('Berkolaborasi dengan tim untuk merancang antarmuka pengguna yang responsif.', 'Collaborated with the team to design responsive user interfaces.')}</li>
-                  </ul>
+                <ul className="experience-list">
+                  <li>{t('Membuat dan mengembangkan konsep algoritma yang dipakai untuk Auto Scoring.', 'Created and developed algorithm concepts used for Auto Scoring.')}</li>
+                  <li>{t('Berkolaborasi dengan tim dalam pengembangan sistem Auto Scoring.', 'Collaborated with the team in developing the Auto Scoring system.')}</li>
+                </ul>
+                <div className="experience-doc">
+                  <p className="doc-label">{t('Dokumentasi', 'Documentation')}</p>
+                  <img
+                    src="/docs/pkl-doc.png"
+                    alt={t('Dokumentasi PKL - Prototype Auto Scoring', 'PKL Documentation - Auto Scoring Prototype')}
+                    className="experience-doc-img"
+                  />
                 </div>
               </div>
             )}
