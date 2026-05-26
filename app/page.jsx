@@ -363,6 +363,7 @@ export default function Home() {
           <h2>{t('Hubungi Saya', 'Contact Me')}</h2>
           <div className="contact-info">
             <p>{t('Email:', 'Email:')} <a href="mailto:mahardikahaikal@gmail.com">mahardikahaikal@gmail.com</a></p>
+            <p>{t('LinkedIn:', 'LinkedIn:')} <a href="https://www.linkedin.com/in/muhammad-haikal-mahardika-b1895b411" target="_blank" rel="noopener noreferrer">muhammad-haikal-mahardika</a></p>
             <p>{t('Siap untuk diskusi atau kolaborasi? Hubungi saya melalui form di bawah ini!', 'Ready for discussion or collaboration? Contact me through the form below!')}</p>
           </div>
           <form className="contact-form" id="contactForm" onSubmit={handleContactSubmit}>
