@@ -196,7 +196,7 @@ a {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
-    auto-rows: 300px;
+    auto-rows: 220px;
 }
 
 .gallery-item {
@@ -560,13 +560,14 @@ textarea.form-input {
 /* ==================== */
 /* RESPONSIVE           */
 /* ==================== */
+@media (max-width: 1024px) {
     .gallery-grid {
         grid-template-columns: repeat(2, 1fr);
-        auto-rows: 250px;
+        auto-rows: 180px;
     }
 
     .services-container {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, 1fr);
         gap: 1.5rem;
     }
 
