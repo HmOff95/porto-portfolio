@@ -197,6 +197,10 @@ a {
     grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
     grid-auto-rows: 220px;
+}
+
+.gallery-item {
+    position: relative;
     overflow: hidden;
     cursor: pointer;
 }
