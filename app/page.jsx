@@ -14,6 +14,8 @@ const LANG_WIPE_IN_MS = 550;
 const LANG_WIPE_HOLD_MS = 250;
 const LANG_WIPE_OUT_MS = 550;
 const THEME_REVEAL_MS = 550;
+// Navbar muncul setelah halaman digulir sejauh 30% tinggi layar
+const NAV_REVEAL_RATIO = 0.3;
 
 const prefersReducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -77,6 +79,14 @@ const CONTACTS = [
   { href: 'https://www.linkedin.com/in/muhammad-haikal-mahardika-b1895b411', label: 'muhammad-haikal-mahardika', name: 'LinkedIn', icon: ICON_LINKEDIN, external: true },
 ];
 
+const SKILL_GROUPS = [
+  { title: 'Programming Languages', items: ['Python', 'JavaScript', 'HTML', 'CSS'] },
+  { title: 'Specializations', items: ['Web Development', 'Fullstack Dev'] },
+];
+
+const GPA = 3.79;
+const GPA_MAX = 4;
+
 const externalProps = (contact) => contact.external ? { target: '_blank', rel: 'noopener noreferrer' } : {};
 
 export default function Home() {
@@ -93,6 +103,7 @@ export default function Home() {
   const [lightboxSrc, setLightboxSrc] = useState('');
   const [activeSection, setActiveSection] = useState('home');
   const [activeProject, setActiveProject] = useState(0);
+  const [isNavVisible, setIsNavVisible] = useState(false);
 
   const projectsGridRef = useRef(null);
   const tabsRef = useRef(null);
@@ -317,6 +328,27 @@ export default function Home() {
     };
   }, [isSidebarOpen]);
 
+  // Navbar disembunyikan di hero, baru turun setelah halaman digulir
+  useEffect(() => {
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      setIsNavVisible(window.scrollY > window.innerHeight * NAV_REVEAL_RATIO);
+    };
+    const handleScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
+  }, []);
+
   // Tandai menu sesuai section yang sedang berada di tengah layar
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -381,13 +413,48 @@ export default function Home() {
     }
   };
 
+  // Tombol bahasa, tema, dan hamburger dipakai di navbar dan di pojok atas hero
+  const navbarActions = (
+    <div className="navbar-actions">
+      <button className="language-toggle" onClick={toggleLanguage} title="Toggle Language">
+        <span key={currentLanguage} className="language-text">{currentLanguage === 'id' ? 'ID' : 'EN'}</span>
+      </button>
+      <button className="theme-toggle" onClick={toggleTheme} title="Toggle Dark Mode">
+        <span className="theme-orbit" style={{ transform: `rotate(${themeTurns * 180}deg)` }}>
+          <span className="theme-icon theme-icon-moon">🌙</span>
+          <span className="theme-icon theme-icon-sun">☀️</span>
+        </span>
+      </button>
+      {/* Hamburger - mobile only */}
+      <button className="hamburger" onClick={toggleSidebar} aria-label="Menu" aria-expanded={isSidebarOpen}>
+        <span className={`hamburger-line ${isSidebarOpen ? 'open' : ''}`}></span>
+        <span className={`hamburger-line ${isSidebarOpen ? 'open' : ''}`}></span>
+        <span className={`hamburger-line ${isSidebarOpen ? 'open' : ''}`}></span>
+      </button>
+    </div>
+  );
+
+  // Judul section: nomor dan label menu (sama seperti di sidebar), lalu judul besar
+  const sectionHead = (id, title) => {
+    const index = NAV_ITEMS.findIndex((item) => item.id === id);
+    return (
+      <div className="section-head reveal">
+        <span className="section-eyebrow">
+          <span className="section-num">{String(index + 1).padStart(2, '0')}</span>
+          {t(...NAV_ITEMS[index].label)}
+        </span>
+        <h2>{title}</h2>
+      </div>
+    );
+  };
+
   return (
     <>
       {/* Navbar */}
-      <nav className="navbar">
+      <nav className={`navbar ${isNavVisible ? 'navbar-visible' : ''}`} aria-hidden={!isNavVisible}>
         <div className="container">
           <div className="nav-brand">Haikal</div>
-          
+
           {/* Desktop menu */}
           <ul className="nav-menu desktop-menu">
             {NAV_ITEMS.map(({ id, label }) => (
@@ -397,23 +464,7 @@ export default function Home() {
             ))}
           </ul>
 
-          <div className="navbar-actions">
-            <button className="language-toggle" onClick={toggleLanguage} title="Toggle Language">
-              <span key={currentLanguage} className="language-text">{currentLanguage === 'id' ? 'ID' : 'EN'}</span>
-            </button>
-            <button className="theme-toggle" onClick={toggleTheme} title="Toggle Dark Mode">
-              <span className="theme-orbit" style={{ transform: `rotate(${themeTurns * 180}deg)` }}>
-                <span className="theme-icon theme-icon-moon">🌙</span>
-                <span className="theme-icon theme-icon-sun">☀️</span>
-              </span>
-            </button>
-            {/* Hamburger - mobile only */}
-            <button className="hamburger" onClick={toggleSidebar} aria-label="Menu" aria-expanded={isSidebarOpen}>
-              <span className={`hamburger-line ${isSidebarOpen ? 'open' : ''}`}></span>
-              <span className={`hamburger-line ${isSidebarOpen ? 'open' : ''}`}></span>
-              <span className={`hamburger-line ${isSidebarOpen ? 'open' : ''}`}></span>
-            </button>
-          </div>
+          {navbarActions}
         </div>
       </nav>
 
@@ -452,23 +503,59 @@ export default function Home() {
 
       {/* Hero Section */}
       <section id="home" className="hero">
-        <div className="hero-content">
-          <div className="hero-image fade-in">
-            <img src="/Prop/haikal_no_bg.png" alt="Muhammad Haikal Mahardika" className="profile-photo" />
+        <div className="hero-grid" aria-hidden="true"></div>
+
+        {/* Pengganti navbar selama masih di hero */}
+        <div className="hero-topbar container fade-in">
+          <span className="nav-brand">Haikal</span>
+          {navbarActions}
+        </div>
+
+        <div className="hero-inner">
+          <div className="hero-text">
+            <span className="hero-status fade-in">
+              <span className="hero-status-dot" aria-hidden="true"></span>
+              {t('Terbuka untuk peluang baru', 'Open to new opportunities')}
+            </span>
+
+            <h1 className="hero-name fade-in delay-1">
+              <span className="hero-greeting">{t('Halo, saya', 'Hi, I\'m')}</span>
+              Muhammad <span className="hero-name-accent">Haikal</span> Mahardika
+            </h1>
+
+            <p className="hero-role fade-in delay-1">
+              Software Engineer<span className="hero-role-sep" aria-hidden="true">/</span>
+              Fullstack Developer<span className="hero-role-sep" aria-hidden="true">/</span>
+              Problem Solver
+            </p>
+
+            <p className="hero-intro fade-in delay-2">
+              {t('Saya membangun produk web dari ide hingga siap dipakai — rapi di sisi tampilan, kokoh di sisi server.', 'I build web products from idea to launch — clean on the front end, solid on the back end.')}
+            </p>
+
+            <div className="hero-actions fade-in delay-2">
+              <button
+                className="btn btn-primary"
+                onClick={() => document.getElementById('projects').scrollIntoView({behavior: 'smooth'})}
+              >
+                {t('Lihat Proyek', 'View Projects')} <span aria-hidden="true">→</span>
+              </button>
+              <a href="#contact" className="btn btn-secondary">{t('Hubungi Saya', 'Get in Touch')}</a>
+            </div>
+
+            <ul className="hero-meta fade-in delay-3">
+              <li>📍 Samarinda, Indonesia</li>
+              <li>🌐 Remote Friendly</li>
+            </ul>
           </div>
-          <h1 className="fade-in">Muhammad Haikal Mahardika</h1>
-          <div className="location-badges fade-in delay-1">
-            <span className="location-badge">📍 Samarinda, Indonesia</span>
-            <span className="remote-badge">🌐 Remote Friendly</span>
+
+          <div className="hero-visual fade-in delay-1">
+            <div className="hero-photo-frame">
+              <img src="/Prop/haikal_no_bg.png" alt="Muhammad Haikal Mahardika" className="hero-photo" />
+            </div>
+            <span className="hero-chip hero-chip-top" aria-hidden="true">⚡ Fullstack</span>
+            <span className="hero-chip hero-chip-bottom" aria-hidden="true">{'</>'} Python · JavaScript</span>
           </div>
-          <p className="fade-in delay-1">Software Engineer | Problem Solver | Fullstack Developer</p>
-          
-          <button 
-            className="btn btn-primary fade-in delay-2" 
-            onClick={() => document.getElementById('projects').scrollIntoView({behavior: 'smooth'})}
-          >
-            {t('Lihat Proyek', 'View Projects')}
-          </button>
         </div>
 
         <a href="#about" className="scroll-cue" aria-label={t('Gulir ke bawah', 'Scroll down')}>
@@ -491,32 +578,27 @@ export default function Home() {
       {/* About Section */}
       <section id="about" className="about">
         <div className="container">
-          <h2 className="reveal">{t('Tentang Saya', 'About Me')}</h2>
+          {sectionHead('about', t('Mengubah ide menjadi solusi yang berfungsi', 'Turning ideas into working solutions'))}
           <div className="about-content">
             <div className="about-text reveal reveal-left">
-              <p>{t('Saya adalah lulusan informatika dari Samarinda yang benar-benar passionate tentang pengembangan software. Ada sesuatu yang istimewa tentang mengubah ide menjadi solusi yang berfungsi—itulah yang mendorong saya.', 'I\'m a computer science graduate from Samarinda who\'s genuinely passionate about software development. There\'s something special about turning ideas into working solutions—that\'s what drives me.')}</p>
+              <p className="about-lead">{t('Saya adalah lulusan informatika dari Samarinda yang benar-benar passionate tentang pengembangan software. Ada sesuatu yang istimewa tentang mengubah ide menjadi solusi yang berfungsi—itulah yang mendorong saya.', 'I\'m a computer science graduate from Samarinda who\'s genuinely passionate about software development. There\'s something special about turning ideas into working solutions—that\'s what drives me.')}</p>
               <p>{t('Saya suka bekerja dengan Python, JavaScript, HTML, dan CSS—dan paling semangat saat membangun produk web yang benar-benar bisa dipakai orang. Saya selalu eksplor teknologi baru dan terus mendorong diri untuk berkembang.', 'I love working with Python, JavaScript, HTML, and CSS—and I\'m happiest when building real products that people can actually use. I\'m always exploring new tech and pushing myself to improve.')}</p>
+              <ul className="about-stats">
+                <li><strong>{GPA}</strong><span>{t('IPK dari 4.00', 'GPA out of 4.00')}</span></li>
+                <li><strong>2</strong><span>{t('Pengalaman kerja', 'Work placements')}</span></li>
+                <li><strong>3</strong><span>{t('Proyek unggulan', 'Featured projects')}</span></li>
+              </ul>
             </div>
-            <div className="skills reveal reveal-right" style={{ '--reveal-delay': '0.15s' }}>
+            <div className="skills-card reveal reveal-right" style={{ '--reveal-delay': '0.15s' }}>
               <h3>{t('Keahlian Teknis', 'Technical Skills')}</h3>
-              <div className="skills-grid-compact">
-                <div className="skill-category-compact">
-                  <h4>Programming Languages</h4>
-                  <div className="skill-list-compact">
-                    <span className="skill-badge-compact">Python</span>
-                    <span className="skill-badge-compact">JavaScript</span>
-                    <span className="skill-badge-compact">HTML</span>
-                    <span className="skill-badge-compact">CSS</span>
-                  </div>
+              {SKILL_GROUPS.map((group) => (
+                <div key={group.title} className="skill-group">
+                  <h4>{group.title}</h4>
+                  <ul className="skill-list">
+                    {group.items.map((skill) => <li key={skill} className="skill-pill">{skill}</li>)}
+                  </ul>
                 </div>
-                <div className="skill-category-compact">
-                  <h4>Specializations</h4>
-                  <div className="skill-list-compact">
-                    <span className="skill-badge-compact">Web Development</span>
-                    <span className="skill-badge-compact">Fullstack Dev</span>
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
@@ -525,30 +607,39 @@ export default function Home() {
       {/* Education Section */}
       <section id="education" className="education">
         <div className="container">
-          <h2 className="reveal">{t('Pendidikan', 'Education')}</h2>
-          <div className="education-content">
-            <div className="education-item reveal reveal-left">
-              <div className="education-header">
-                <h3>{t('S1 Teknik Informatika', 'Bachelor of Engineering in Computer Science')}</h3>
-                <span className="period">Sep 2021 – Oct 2025</span>
+          {sectionHead('education', t('Fondasi di bidang informatika', 'A foundation in computer science'))}
+          <article className="edu-card reveal">
+            <div className="edu-main">
+              <div className="edu-meta">
+                <span className="edu-period">Sep 2021 – Oct 2025</span>
+                <span className="edu-tag">{t('Lulus', 'Graduated')}</span>
               </div>
-              <p className="institution">Universitas Muhammadiyah Kalimantan Timur, Samarinda</p>
-              <div className="education-details">
-                <ul>
-                  <li>{t('Merancang dan membangun proyek software lintas bahasa—selalu fokus pada solusi yang nyata dan berfungsi.', 'Designed and built software projects across multiple languages—always focused on real, working solutions.')}</li>
-                  <li>{t('Fondasi kuat dalam algoritma dan struktur data—diterapkan dalam proyek nyata, bukan sekadar teori.', 'Strong foundation in algorithms and data structures—applied in actual projects, not just theory.')}</li>
-                </ul>
-              </div>
-              <div className="gpa-badge">GPA: 3.79</div>
+              <h3>{t('S1 Teknik Informatika', 'Bachelor of Engineering in Computer Science')}</h3>
+              <p className="edu-institution">Universitas Muhammadiyah Kalimantan Timur, Samarinda</p>
+              <ul className="edu-points">
+                <li>{t('Merancang dan membangun proyek software lintas bahasa—selalu fokus pada solusi yang nyata dan berfungsi.', 'Designed and built software projects across multiple languages—always focused on real, working solutions.')}</li>
+                <li>{t('Fondasi kuat dalam algoritma dan struktur data—diterapkan dalam proyek nyata, bukan sekadar teori.', 'Strong foundation in algorithms and data structures—applied in actual projects, not just theory.')}</li>
+              </ul>
             </div>
-          </div>
+
+            {/* Cincin IPK: busur terisi sesuai IPK / 4.00 */}
+            <div className="edu-gpa">
+              <div className="edu-gpa-ring" style={{ '--gpa': GPA / GPA_MAX }}>
+                <span className="edu-gpa-value">
+                  <strong>{GPA}</strong>
+                  <small>/ {GPA_MAX.toFixed(2)}</small>
+                </span>
+              </div>
+              <p>{t('Indeks Prestasi Kumulatif', 'Cumulative GPA')}</p>
+            </div>
+          </article>
         </div>
       </section>
 
       {/* Experience Section */}
       <section id="experience" className="experience">
         <div className="container">
-          <h2 className="reveal">{t('Pengalaman', 'Experience')}</h2>
+          {sectionHead('experience', t('Pengalaman Kerja', 'Work Experience'))}
 
           <div className="reveal">
           {/* Tab System */}
@@ -572,62 +663,81 @@ export default function Home() {
           <div className="experience-content" ref={experienceContentRef}>
             <div className={`tab-panel ${tabPhase !== 'idle' ? `tab-${tabPhase}-${tabDir}` : ''}`}>
             {displayedTab === 'magang' && (
-              <div className="education-item">
-                <div className="education-header">
-                  <div>
-                    <h3>{t('Magang', 'Internship')}</h3>
-                    <p className="institution">{t('Dinas Komunikasi dan Informatika Kota Samarinda', 'Communication and Informatics Office of Samarinda City')}</p>
+              <article className="edu-card exp-card">
+                <div className="edu-main">
+                  <div className="edu-meta">
+                    <span className="edu-period">{t('Sep 2026 – Okt 2026', 'Sep 2026 – Oct 2026')}</span>
+                    <span className="exp-tag">Next.js</span>
                   </div>
-                  <span className="education-period">{t('Sep 2026 – Okt 2026', 'Sep 2026 – Oct 2026')}</span>
+                  <h3>{t('Magang', 'Internship')}</h3>
+                  <p className="edu-institution">{t('Dinas Komunikasi dan Informatika Kota Samarinda', 'Communication and Informatics Office of Samarinda City')}</p>
+                  <ul className="edu-points">
+                    <li>{t('Mengembangkan Sistem Klasifikasi Informasi Publik untuk PPID Kota Samarinda bersama Ibrahim Surya Anwarulkarim.', 'Developed a Public Information Classification System for the Samarinda City PPID (Information and Documentation Management Office) together with Ibrahim Surya Anwarulkarim.')}</li>
+                    <li>{t('Membangun aplikasi web Next.js yang menentukan status informasi (Terbuka/Dikecualikan) beserta rujukan hukumnya.', 'Built a Next.js web application that determines the status of public information (Open/Exempt) along with its legal basis.')}</li>
+                  </ul>
                 </div>
-                <ul className="experience-list">
-                  <li>{t('Mengembangkan Sistem Klasifikasi Informasi Publik untuk PPID Kota Samarinda bersama Ibrahim Surya Anwarulkarim.', 'Developed a Public Information Classification System for the Samarinda City PPID (Information and Documentation Management Office) together with Ibrahim Surya Anwarulkarim.')}</li>
-                  <li>{t('Membangun aplikasi web Next.js yang menentukan status informasi (Terbuka/Dikecualikan) beserta rujukan hukumnya.', 'Built a Next.js web application that determines the status of public information (Open/Exempt) along with its legal basis.')}</li>
-                </ul>
-                <figure className="experience-doc experience-shot">
+                <figure className="exp-visual">
                   <a
                     href="https://sistem-klasifikasi-informasi.vercel.app/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="experience-shot-link"
+                    className="exp-frame"
                     aria-label={t('Buka Sistem Klasifikasi Informasi Publik di tab baru', 'Open the Public Information Classification System in a new tab')}
                   >
+                    <span className="preview-bar" aria-hidden="true">
+                      <span></span><span></span><span></span>
+                      <em>sistem-klasifikasi-informasi.vercel.app</em>
+                    </span>
                     <img
                       src="/Prop/klasifikasi-ppid.webp"
                       alt={t('Tampilan beranda Sistem Klasifikasi Informasi Publik PPID Kota Samarinda', 'Homepage of the Samarinda City PPID Public Information Classification System')}
                       width="1280"
                       height="800"
                       loading="lazy"
-                      className="experience-shot-img"
+                      className="exp-img"
                     />
                   </a>
-                  <figcaption className="experience-shot-caption">Sistem Klasifikasi Informasi Publik – PPID Kota Samarinda</figcaption>
+                  <figcaption>{t('Kunjungi situs ↗', 'Visit site ↗')}</figcaption>
                 </figure>
-              </div>
+              </article>
             )}
             {displayedTab === 'pkl' && (
-              <div className="education-item">
-                <div className="education-header">
-                  <div>
-                    <h3>Praktek Kerja Lapangan</h3>
-                    <p className="institution">{t('Universitas Muhammadiyah Kalimantan Timur', 'Universitas Muhammadiyah Kalimantan Timur')}</p>
+              <article className="edu-card exp-card">
+                <div className="edu-main">
+                  <div className="edu-meta">
+                    <span className="edu-period">{t('Jul 2023 – Okt 2023', 'Jul 2023 – Oct 2023')}</span>
+                    <span className="exp-tag">Auto Scoring</span>
                   </div>
-                  <span className="education-period">Jul 2023 – Okt 2023</span>
+                  <h3>{t('Praktek Kerja Lapangan', 'Field Practice')}</h3>
+                  <p className="edu-institution">Universitas Muhammadiyah Kalimantan Timur</p>
+                  <ul className="edu-points">
+                    <li>{t('Membuat dan mengembangkan konsep algoritma yang dipakai untuk Auto Scoring.', 'Created and developed algorithm concepts used for Auto Scoring.')}</li>
+                    <li>{t('Berkolaborasi dengan tim dalam pengembangan sistem Auto Scoring.', 'Collaborated with the team in developing the Auto Scoring system.')}</li>
+                  </ul>
                 </div>
-                <ul className="experience-list">
-                  <li>{t('Membuat dan mengembangkan konsep algoritma yang dipakai untuk Auto Scoring.', 'Created and developed algorithm concepts used for Auto Scoring.')}</li>
-                  <li>{t('Berkolaborasi dengan tim dalam pengembangan sistem Auto Scoring.', 'Collaborated with the team in developing the Auto Scoring system.')}</li>
-                </ul>
-                <div className="experience-doc">
-                  <p className="doc-label">{t('Dokumentasi', 'Documentation')}</p>
-                  <img
-                    src="/Prop/pkl-doc.png"
-                    alt={t('Dokumentasi PKL - Prototype Auto Scoring', 'PKL Documentation - Auto Scoring Prototype')}
-                    className="experience-doc-img"
+                <figure className="exp-visual">
+                  <button
+                    type="button"
+                    className="exp-frame"
                     onClick={() => { setLightboxSrc('/Prop/pkl-doc.png'); setLightboxOpen(true); }}
-                  />
-                </div>
-              </div>
+                    aria-label={t('Perbesar dokumentasi PKL', 'Enlarge field practice documentation')}
+                  >
+                    <span className="preview-bar" aria-hidden="true">
+                      <span></span><span></span><span></span>
+                      <em>{t('dokumentasi / auto-scoring', 'documentation / auto-scoring')}</em>
+                    </span>
+                    <img
+                      src="/Prop/pkl-doc.png"
+                      alt={t('Dokumentasi PKL - Prototype Auto Scoring', 'PKL Documentation - Auto Scoring Prototype')}
+                      width="548"
+                      height="680"
+                      loading="lazy"
+                      className="exp-img"
+                    />
+                  </button>
+                  <figcaption>{t('Klik untuk memperbesar', 'Click to enlarge')}</figcaption>
+                </figure>
+              </article>
             )}
             </div>
           </div>
@@ -638,7 +748,7 @@ export default function Home() {
       {/* Projects Section */}
       <section id="projects" className="projects">
         <div className="container">
-          <h2 className="reveal">{t('Proyek Saya', 'My Projects')}</h2>
+          {sectionHead('projects', t('Proyek Saya', 'My Projects'))}
           <div className="projects-grid" ref={projectsGridRef} onScroll={handleProjectsScroll}>
             <div className="project-card hover-lift reveal">
               <div className="project-preview">
@@ -646,22 +756,14 @@ export default function Home() {
                   <span></span><span></span><span></span>
                   <em>sistem-klasifikasi-informasi.vercel.app</em>
                 </div>
-                {/* Situs PPID menolak di-embed (X-Frame-Options), jadi pakai screenshot */}
-                <div className="preview-frame">
-                  <img
-                    src="/Prop/klasifikasi-ppid.webp"
-                    alt={t('Tampilan beranda Sistem Klasifikasi Informasi Publik', 'Homepage of the Public Information Classification System')}
-                    width="1280"
-                    height="800"
-                    loading="lazy"
-                    className="preview-img"
-                  />
-                </div>
+                {/* Situs PPID hanya mengizinkan di-embed dari mhmofficialporto.vercel.app (CSP frame-ancestors) */}
+                <PreviewFrame src="https://sistem-klasifikasi-informasi.vercel.app/" />
                 <div className="preview-overlay" onClick={() => handleProjectPreviewClick('https://sistem-klasifikasi-informasi.vercel.app/')}>
                   <span className="preview-fallback">{t('Kunjungi Situs →', 'Visit Site →')}</span>
                 </div>
               </div>
               <div className="project-content">
+                <span className="project-num" aria-hidden="true">01</span>
                 <div className="template-tags">
                   <span className="template-tag tag-next">Next.js</span>
                 </div>
@@ -685,6 +787,7 @@ export default function Home() {
                 </div>
               </div>
               <div className="project-content">
+                <span className="project-num" aria-hidden="true">02</span>
                 <div className="template-tags">
                   <span className="template-tag tag-html">HTML</span>
                 </div>
@@ -707,6 +810,7 @@ export default function Home() {
                 </div>
               </div>
               <div className="project-content">
+                <span className="project-num" aria-hidden="true">03</span>
                 <div className="template-tags">
                   <span className="template-tag tag-html">HTML</span>
                   <span className="template-tag tag-css">CSS</span>
@@ -738,27 +842,41 @@ export default function Home() {
       {/* Contact Section */}
       <section id="contact" className="contact">
         <div className="container">
-          <h2 className="reveal">{t('Hubungi Saya', 'Contact Me')}</h2>
-          <div className="contact-info reveal">
-            <p className="contact-tagline">{t('Siap untuk diskusi atau kolaborasi? Hubungi saya melalui form di bawah ini!', 'Ready for discussion or collaboration? Contact me through the form below!')}</p>
-            <div className="contact-links">
-              {CONTACTS.map((contact) => (
-                <a key={contact.name} href={contact.href} {...externalProps(contact)} className="contact-link">
-                  <span className="contact-link-icon">{contact.icon}</span>
-                  <span className="contact-link-text">
-                    <span className="contact-link-name">{contact.name}</span>
-                    {contact.label}
-                  </span>
-                </a>
-              ))}
+          {sectionHead('contact', t('Mari bekerja sama', 'Let\'s work together'))}
+          <div className="contact-layout">
+            <div className="contact-info reveal reveal-left">
+              <p className="contact-tagline">{t('Siap untuk diskusi atau kolaborasi? Kirim pesan lewat form, atau hubungi saya langsung lewat salah satu kanal berikut.', 'Ready for a discussion or collaboration? Send a message through the form, or reach me directly on any of these channels.')}</p>
+              <div className="contact-links">
+                {CONTACTS.map((contact) => (
+                  <a key={contact.name} href={contact.href} {...externalProps(contact)} className="contact-link">
+                    <span className="contact-link-icon">{contact.icon}</span>
+                    <span className="contact-link-text">
+                      <span className="contact-link-name">{contact.name}</span>
+                      {contact.label}
+                    </span>
+                    <span className="contact-link-arrow" aria-hidden="true">→</span>
+                  </a>
+                ))}
+              </div>
             </div>
+            <form className="contact-form reveal reveal-right" style={{ '--reveal-delay': '0.15s' }} id="contactForm" onSubmit={handleContactSubmit}>
+              <div className="form-row">
+                <label className="form-field">
+                  <span>{t('Nama', 'Name')}</span>
+                  <input type="text" name="name" placeholder={t('Nama Anda', 'Your Name')} required />
+                </label>
+                <label className="form-field">
+                  <span>Email</span>
+                  <input type="email" name="email" placeholder={t('Email Anda', 'Your Email')} required />
+                </label>
+              </div>
+              <label className="form-field">
+                <span>{t('Pesan', 'Message')}</span>
+                <textarea name="message" placeholder={t('Pesan Anda', 'Your Message')} rows="5" required></textarea>
+              </label>
+              <button type="submit" className="btn btn-primary">{t('Kirim Pesan', 'Send Message')} <span aria-hidden="true">→</span></button>
+            </form>
           </div>
-          <form className="contact-form reveal" style={{ '--reveal-delay': '0.15s' }} id="contactForm" onSubmit={handleContactSubmit}>
-            <input type="text" name="name" placeholder={t('Nama Anda', 'Your Name')} required />
-            <input type="email" name="email" placeholder={t('Email Anda', 'Your Email')} required />
-            <textarea name="message" placeholder={t('Pesan Anda', 'Your Message')} rows="5" required></textarea>
-            <button type="submit" className="btn btn-primary">{t('Kirim Pesan', 'Send Message')}</button>
-          </form>
         </div>
       </section>
 
