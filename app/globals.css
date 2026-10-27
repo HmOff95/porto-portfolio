@@ -82,37 +82,59 @@ iframe {
 }
 
 /* NAVBAR */
-/* Tersembunyi di atas layar selama di hero, turun setelah halaman digulir */
+/* Pill melayang: tersembunyi di atas layar selama di hero, turun setelah halaman digulir */
 .navbar {
-    background: rgba(10, 10, 15, 0.85);
-    backdrop-filter: blur(12px);
     position: fixed;
-    top: 0;
+    top: 0.75rem;
     left: 0;
     right: 0;
     z-index: 100;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    transform: translateY(-100%);
+    padding: 0 1.25rem;
+    pointer-events: none;
+    transform: translateY(calc(-100% - 1.5rem));
     visibility: hidden;
-    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s 0.45s, background 0.4s ease;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s 0.45s;
 }
 
 .navbar.navbar-visible {
     transform: none;
     visibility: visible;
-    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s, background 0.4s ease;
-}
-
-html.light-mode .navbar {
-    background: rgba(250, 250, 250, 0.85);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s;
 }
 
 .navbar .container {
+    position: relative;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 1.25rem;
+    padding: 0.5rem 0.5rem 0.5rem 1.5rem;
+    background: rgba(15, 15, 24, 0.72);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border: 1px solid var(--border-light);
+    border-radius: 999px;
+    box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.6);
+    pointer-events: auto;
+    transition: background 0.4s ease, border-color 0.4s ease;
+}
+
+html.light-mode .navbar .container {
+    background: rgba(255, 255, 255, 0.75);
+    box-shadow: 0 12px 32px -14px rgba(10, 10, 15, 0.18);
+}
+
+/* Progres baca halaman, menempel di tepi bawah pill */
+.navbar .container::after {
+    content: "";
+    position: absolute;
+    left: 1.5rem;
+    right: 1.5rem;
+    bottom: -1px;
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    transform: scaleX(var(--scroll-progress, 0));
+    transform-origin: left;
 }
 
 .nav-brand {
@@ -125,64 +147,84 @@ html.light-mode .navbar {
 }
 
 .nav-menu {
+    position: relative;
     display: flex;
     list-style: none;
-    gap: 2rem;
+    gap: 0.25rem;
 }
 
-.nav-menu a {
-    text-decoration: none;
-    color: var(--text);
-    transition: color 0.4s ease;
-    font-size: 0.85rem;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+/* Pill latar link aktif, posisinya diatur dari JS */
+.nav-indicator {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    border-radius: 999px;
+    background: rgba(124, 58, 237, 0.14);
+    border: 1px solid rgba(124, 58, 237, 0.3);
+    pointer-events: none;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .nav-menu a {
     position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: 999px;
+    text-decoration: none;
+    color: var(--text);
+    font-size: 0.8rem;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.3s ease, background 0.3s ease;
 }
 
-.nav-menu a::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -4px;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(90deg, var(--primary), var(--secondary));
-    transform: scaleX(0);
-    transform-origin: right;
-    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+.nav-num {
+    font-size: 0.65rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+    color: var(--primary);
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
 }
 
 .nav-menu a:hover {
-    color: var(--primary);
+    color: var(--text-light);
+    background: var(--border);
 }
 
-.nav-menu a:hover::after {
-    transform: scaleX(1);
-    transform-origin: left;
+.nav-menu a:hover .nav-num {
+    opacity: 1;
 }
 
 .navbar-actions {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.25rem;
 }
 
+/* Tombol ikon tanpa border, baru terlihat saat di-hover */
 .language-toggle,
 .theme-toggle {
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
     background: none;
-    border: 1px solid var(--primary);
-    color: var(--primary);
-    padding: 0.5rem 0.8rem;
-    border-radius: 6px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    color: var(--text);
     cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 600;
-    transition: all 0.4s ease;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -190,8 +232,9 @@ html.light-mode .navbar {
 
 .language-toggle:hover,
 .theme-toggle:hover {
-    box-shadow: 0 0 12px rgba(124, 58, 237, 0.3);
-    transform: translateY(-2px);
+    background: var(--border);
+    border-color: var(--border-light);
+    color: var(--primary);
 }
 
 .language-toggle:active,
@@ -209,8 +252,8 @@ html.light-mode .navbar {
 .theme-orbit {
     position: relative;
     display: block;
-    width: 1.2em;
-    height: 1.2em;
+    width: 1.125rem;
+    height: 1.125rem;
     transform-origin: 50% 150%;
     transition: transform 0.55s cubic-bezier(0.65, 0, 0.35, 1);
 }
@@ -241,8 +284,13 @@ html.theme-switching *::after {
     justify-content: center;
 }
 
+.theme-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
 .theme-icon-sun {
-    transform: translateY(2.4em) rotate(180deg);
+    transform: translateY(2.25rem) rotate(180deg);
 }
 
 @keyframes langFlip {
@@ -1672,11 +1720,236 @@ html.light-mode .hero-chip {
 
 /* FOOTER */
 .footer {
-    background: var(--card-bg);
+    position: relative;
+    overflow: hidden;
+    background: var(--dark-alt);
     color: var(--text);
-    text-align: center;
-    padding: 2rem 1.25rem;
+    padding: 4.5rem 1.25rem 0;
     border-top: 1px solid var(--border);
+}
+
+/* Garis gradient tipis di tepi atas footer */
+.footer::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    width: min(40rem, 80%);
+    height: 1px;
+    transform: translateX(-50%);
+    background: linear-gradient(90deg, transparent, var(--primary), var(--secondary), transparent);
+}
+
+.footer-top {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr;
+    gap: 3rem;
+    padding-bottom: 3rem;
+}
+
+.footer-brand p {
+    max-width: 22rem;
+    margin: 0.75rem 0 1.25rem;
+    font-size: 0.95rem;
+    opacity: 0.7;
+}
+
+.footer-top-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-light);
+    border-radius: 999px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: border-color 0.3s ease, color 0.3s ease;
+}
+
+.footer-top-link span {
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.footer-top-link:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.footer-top-link:hover span {
+    transform: translateY(-3px);
+}
+
+.footer-label {
+    margin-bottom: 1rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--primary);
+}
+
+.footer-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+/* Navigasi dibagi dua kolom (01–03 | 04–06), mengalir ke bawah dulu */
+.footer-links-split {
+    display: grid;
+    grid-template-rows: repeat(3, auto);
+    grid-auto-flow: column;
+    gap: 0.6rem 2rem;
+    justify-content: start;
+}
+
+.footer-links .nav-num {
+    opacity: 0.9;
+}
+
+.footer-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.95rem;
+    opacity: 0.75;
+    transition: opacity 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+
+.footer-links a:hover {
+    opacity: 1;
+    color: var(--primary);
+    transform: translateX(4px);
+}
+
+.footer-link-icon {
+    display: flex;
+    color: var(--primary);
+}
+
+.footer-link-icon svg {
+    width: 1rem;
+    height: 1rem;
+}
+
+.footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    padding: 1.5rem 0;
+    border-top: 1px solid var(--border);
+    font-size: 0.85rem;
+    opacity: 0.6;
+}
+
+.footer-hint {
+    font-style: italic;
+}
+
+/* Tulisan raksasa berkontur, terpotong di tepi bawah */
+.footer-watermark {
+    margin-bottom: -0.18em;
+    font-size: clamp(5rem, 19vw, 22rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    text-align: center;
+    color: transparent;
+    -webkit-text-stroke: 1px var(--border-light);
+    background: linear-gradient(180deg, rgba(124, 58, 237, 0.18), transparent 80%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    cursor: default;
+    transition: -webkit-text-stroke-color 0.4s ease;
+}
+
+.footer-watermark:hover {
+    -webkit-text-stroke-color: rgba(124, 58, 237, 0.45);
+}
+
+/* EASTER EGG */
+.confetti {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.confetti-piece {
+    position: absolute;
+    top: -1.5rem;
+    width: 0.5rem;
+    height: 0.9rem;
+    border-radius: 2px;
+    animation-name: confettiFall;
+    animation-timing-function: cubic-bezier(0.25, 0.6, 0.5, 1);
+    animation-fill-mode: forwards;
+}
+
+.confetti-tone-0 { background: var(--primary); }
+.confetti-tone-1 { background: var(--secondary); }
+.confetti-tone-2 { background: #F59E0B; }
+
+@keyframes confettiFall {
+    to {
+        transform: translate(var(--drift), 110vh) rotate(var(--spin));
+    }
+}
+
+.egg-toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(1.5rem + env(safe-area-inset-bottom));
+    z-index: 9001;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    width: max-content;
+    max-width: calc(100vw - 2rem);
+    padding: 0.85rem 1.25rem;
+    background: var(--card-bg);
+    border: 1px solid rgba(124, 58, 237, 0.4);
+    border-radius: 16px;
+    box-shadow: 0 16px 40px -12px rgba(124, 58, 237, 0.5);
+    color: var(--text);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    animation: eggToast 4.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.egg-toast strong {
+    display: block;
+    color: var(--primary);
+}
+
+.egg-toast-icon {
+    font-size: 1.75rem;
+}
+
+@keyframes eggToast {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, 1.5rem) scale(0.95);
+    }
+    10%, 85% {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, 0.75rem);
+    }
 }
 
 /* RESPONSIVE */
@@ -1686,19 +1959,50 @@ html.light-mode .hero-chip {
         grid-template-columns: 1fr;
     }
 
-    .nav-menu {
-        gap: 1rem;
+    .footer {
+        padding-top: 3.5rem;
     }
 
-    .navbar-actions {
-        gap: 0.5rem;
+    .footer-top {
+        grid-template-columns: 1fr 1fr;
+        gap: 2.5rem 1.5rem;
+    }
+
+    .footer-brand {
+        grid-column: 1 / -1;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .navbar {
+        top: 0.5rem;
+        padding: 0 0.75rem;
+    }
+
+    .navbar .container {
+        padding: 0.35rem 0.35rem 0.35rem 1.1rem;
     }
 }
 
 /* Tablet: menu desktop masih muat tapi perlu dirapatkan */
 @media (min-width: 769px) and (max-width: 1024px) {
+    .navbar .container {
+        padding-left: 1.1rem;
+    }
+
     .nav-menu {
-        gap: 1.25rem;
+        gap: 0;
+    }
+
+    .nav-menu a {
+        padding: 0.45rem 0.6rem;
+    }
+
+    .nav-num {
+        display: none;
     }
 
     .hero-inner {
@@ -1728,11 +2032,20 @@ html.light-mode .hero-chip {
 .hamburger {
   display: none;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 5px;
+  width: 2.5rem;
+  height: 2.5rem;
   background: none;
   border: none;
+  border-radius: 999px;
   cursor: pointer;
-  padding: 4px;
+  padding: 0;
+  transition: background 0.3s ease;
+}
+.hamburger:hover {
+  background: var(--border);
 }
 .hamburger-line {
   width: 1.5rem;
@@ -1944,9 +2257,10 @@ html.light-mode .hero-chip {
 /* Link navbar desktop untuk section yang sedang dilihat */
 .nav-menu a.active {
   color: var(--primary);
+  background: none;
 }
-.nav-menu a.active::after {
-  transform: scaleX(1);
+.nav-menu a.active .nav-num {
+  opacity: 1;
 }
 
 /* ===== PREVIEW FALLBACK ===== */
@@ -2018,11 +2332,14 @@ html.light-mode .hero-chip {
 
 @media (max-width: 480px) {
   .navbar-actions {
-    gap: 0.5rem;
+    gap: 0.125rem;
+  }
+  .footer-top {
+    grid-template-columns: 1fr;
   }
   .language-toggle, .theme-toggle {
-    padding: 6px 10px;
-    font-size: 0.8rem;
+    width: 2.25rem;
+    height: 2.25rem;
   }
   .hero-actions .btn {
     padding: 0.75rem 1.4rem;
@@ -2781,7 +3098,8 @@ section[id] {
     animation: none;
   }
 
-  .theme-orbit {
+  .theme-orbit,
+  .nav-indicator {
     transition: none;
   }
 

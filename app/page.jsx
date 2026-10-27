@@ -17,6 +17,13 @@ const THEME_REVEAL_MS = 550;
 // Navbar muncul setelah halaman digulir sejauh 30% tinggi layar
 const NAV_REVEAL_RATIO = 0.3;
 
+// Easter egg: Konami code di keyboard, atau ketuk tulisan besar di footer beberapa kali
+const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+const EGG_TAPS = 5;
+const EGG_TAP_RESET_MS = 1500;
+const EGG_SHOW_MS = 4500;
+const CONFETTI_COUNT = 48;
+
 const prefersReducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -73,6 +80,19 @@ const ICON_LINKEDIN = (
   </svg>
 );
 
+const ICON_MOON = (
+  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+  </svg>
+);
+
+const ICON_SUN = (
+  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="4"/>
+    <path d="M12 2v2M12 20v2m-7.07-2.93 1.41-1.41M17.66 6.34l1.41-1.41M2 12h2m16 0h2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41"/>
+  </svg>
+);
+
 const CONTACTS = [
   { href: 'mailto:mahardikahaikal@gmail.com', label: 'mahardikahaikal@gmail.com', name: 'Email', icon: ICON_MAIL },
   { href: 'https://wa.me/6287766891821', label: '+62 877-6689-1821', name: 'WhatsApp', icon: ICON_CHAT, external: true },
@@ -104,12 +124,19 @@ export default function Home() {
   const [activeSection, setActiveSection] = useState('home');
   const [activeProject, setActiveProject] = useState(0);
   const [isNavVisible, setIsNavVisible] = useState(false);
+  const [easterEgg, setEasterEgg] = useState(null);
 
+  const navRef = useRef(null);
+  const navMenuRef = useRef(null);
+  const navIndicatorRef = useRef(null);
   const projectsGridRef = useRef(null);
   const tabsRef = useRef(null);
   const tabIndicatorRef = useRef(null);
   const experienceContentRef = useRef(null);
   const tabTimers = useRef([]);
+  const eggTimer = useRef(0);
+  const eggTapTimer = useRef(0);
+  const eggTaps = useRef(0);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const closeSidebar = () => setIsSidebarOpen(false);
@@ -212,7 +239,74 @@ export default function Home() {
     return () => window.removeEventListener('resize', update);
   }, [activeExperienceTab, currentLanguage]);
 
+  // Pill di menu navbar bergeser mengikuti section aktif
+  useIsoLayoutEffect(() => {
+    const update = () => {
+      const active = navMenuRef.current?.querySelector('a.active');
+      const indicator = navIndicatorRef.current;
+      if (!active || !indicator) return;
+      indicator.style.width = `${active.offsetWidth}px`;
+      indicator.style.transform = `translateX(${active.offsetLeft}px)`;
+    };
+
+    update();
+    document.fonts?.ready.then(update);
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, [activeSection, currentLanguage]);
+
   useEffect(() => () => tabTimers.current.forEach(clearTimeout), []);
+
+  // Konfeti jatuh + toast. Konfeti dilewati jika pengguna memilih reduced motion.
+  const triggerEasterEgg = () => {
+    const pieces = prefersReducedMotion() ? [] : Array.from({ length: CONFETTI_COUNT }, (_, i) => ({
+      left: Math.random() * 100,
+      delay: Math.random() * 0.5,
+      duration: 2.2 + Math.random() * 1.5,
+      drift: Math.random() * 160 - 80,
+      spin: Math.random() * 1080 - 540,
+      tone: i % 3,
+    }));
+
+    clearTimeout(eggTimer.current);
+    setEasterEgg({ id: Date.now(), pieces });
+    eggTimer.current = setTimeout(() => setEasterEgg(null), EGG_SHOW_MS);
+  };
+
+  const handleWatermarkTap = () => {
+    clearTimeout(eggTapTimer.current);
+    eggTaps.current += 1;
+    if (eggTaps.current >= EGG_TAPS) {
+      eggTaps.current = 0;
+      triggerEasterEgg();
+      return;
+    }
+    eggTapTimer.current = setTimeout(() => { eggTaps.current = 0; }, EGG_TAP_RESET_MS);
+  };
+
+  // Konami code + petunjuk kecil untuk yang membuka DevTools
+  useEffect(() => {
+    let step = 0;
+    const handleKeyDown = (e) => {
+      if (e.target.closest?.('input, textarea')) return;
+      const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+      step = key === KONAMI[step] ? step + 1 : key === KONAMI[0] ? 1 : 0;
+      if (step === KONAMI.length) {
+        step = 0;
+        triggerEasterEgg();
+      }
+    };
+
+    console.log('%cHai, sesama developer 👋', 'font: 700 16px sans-serif; color: #7C3AED');
+    console.log('Coba ketik ↑ ↑ ↓ ↓ ← → ← → B A di halaman ini.');
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      clearTimeout(eggTimer.current);
+      clearTimeout(eggTapTimer.current);
+    };
+  }, []);
 
   const applyTheme = (newMode) => {
     setIsLightMode(newMode);
@@ -328,12 +422,15 @@ export default function Home() {
     };
   }, [isSidebarOpen]);
 
-  // Navbar disembunyikan di hero, baru turun setelah halaman digulir
+  // Navbar disembunyikan di hero, baru turun setelah halaman digulir.
+  // Progres baca halaman ditulis langsung ke CSS variable agar tidak memicu render ulang.
   useEffect(() => {
     let frame = 0;
     const update = () => {
       frame = 0;
       setIsNavVisible(window.scrollY > window.innerHeight * NAV_REVEAL_RATIO);
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      navRef.current?.style.setProperty('--scroll-progress', maxScroll > 0 ? window.scrollY / maxScroll : 0);
     };
     const handleScroll = () => {
       if (!frame) frame = requestAnimationFrame(update);
@@ -421,8 +518,8 @@ export default function Home() {
       </button>
       <button className="theme-toggle" onClick={toggleTheme} title="Toggle Dark Mode">
         <span className="theme-orbit" style={{ transform: `rotate(${themeTurns * 180}deg)` }}>
-          <span className="theme-icon theme-icon-moon">🌙</span>
-          <span className="theme-icon theme-icon-sun">☀️</span>
+          <span className="theme-icon theme-icon-moon">{ICON_MOON}</span>
+          <span className="theme-icon theme-icon-sun">{ICON_SUN}</span>
         </span>
       </button>
       {/* Hamburger - mobile only */}
@@ -451,15 +548,19 @@ export default function Home() {
   return (
     <>
       {/* Navbar */}
-      <nav className={`navbar ${isNavVisible ? 'navbar-visible' : ''}`} aria-hidden={!isNavVisible}>
+      <nav ref={navRef} className={`navbar ${isNavVisible ? 'navbar-visible' : ''}`} aria-hidden={!isNavVisible}>
         <div className="container">
           <div className="nav-brand">Haikal</div>
 
-          {/* Desktop menu */}
-          <ul className="nav-menu desktop-menu">
-            {NAV_ITEMS.map(({ id, label }) => (
+          {/* Desktop menu: nomor sama seperti di sidebar dan judul section */}
+          <ul className="nav-menu desktop-menu" ref={navMenuRef}>
+            <li className="nav-indicator" ref={navIndicatorRef} aria-hidden="true"></li>
+            {NAV_ITEMS.map(({ id, label }, i) => (
               <li key={id}>
-                <a href={`#${id}`} className={activeSection === id ? 'active' : ''}>{t(...label)}</a>
+                <a href={`#${id}`} className={activeSection === id ? 'active' : ''}>
+                  <span className="nav-num">{String(i + 1).padStart(2, '0')}</span>
+                  {t(...label)}
+                </a>
               </li>
             ))}
           </ul>
@@ -876,9 +977,81 @@ export default function Home() {
       {/* Footer */}
       <footer className="footer">
         <div className="container">
-          <p>&copy; 2026 Muhammad Haikal Mahardika. <span>{t('Semua hak dilindungi.', 'All rights reserved.')}</span></p>
+          <div className="footer-top">
+            <div className="footer-brand">
+              <span className="nav-brand">Haikal</span>
+              <p>{t('Software Engineer & Fullstack Developer dari Samarinda. Terbuka untuk kolaborasi dan peluang baru.', 'Software Engineer & Fullstack Developer from Samarinda. Open to collaborations and new opportunities.')}</p>
+              <a href="#home" className="footer-top-link">
+                {t('Kembali ke atas', 'Back to top')} <span aria-hidden="true">↑</span>
+              </a>
+            </div>
+
+            <nav className="footer-col" aria-label={t('Navigasi footer', 'Footer navigation')}>
+              <p className="footer-label">{t('Navigasi', 'Navigation')}</p>
+              <ul className="footer-links footer-links-split">
+                {NAV_ITEMS.map(({ id, label }, i) => (
+                  <li key={id}>
+                    <a href={`#${id}`}>
+                      <span className="nav-num">{String(i + 1).padStart(2, '0')}</span>
+                      {t(...label)}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            <div className="footer-col">
+              <p className="footer-label">{t('Kontak', 'Contact')}</p>
+              <ul className="footer-links">
+                {CONTACTS.map((contact) => (
+                  <li key={contact.name}>
+                    <a href={contact.href} {...externalProps(contact)}>
+                      <span className="footer-link-icon">{contact.icon}</span>
+                      {contact.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className="footer-bottom">
+            <p>&copy; 2026 Muhammad Haikal Mahardika. {t('Semua hak dilindungi.', 'All rights reserved.')}</p>
+            <p className="footer-hint">{t('Ada rahasia kecil di halaman ini', 'There\'s a little secret on this page')} <span aria-hidden="true">👀</span></p>
+          </div>
         </div>
+
+        {/* Tulisan besar dekoratif, diketuk 5x memicu easter egg */}
+        <div className="footer-watermark" onClick={handleWatermarkTap} aria-hidden="true">HAIKAL</div>
       </footer>
+
+      {/* Easter Egg */}
+      {easterEgg && (
+        <div className="easter-egg" key={easterEgg.id}>
+          <div className="confetti" aria-hidden="true">
+            {easterEgg.pieces.map((p, i) => (
+              <span
+                key={i}
+                className={`confetti-piece confetti-tone-${p.tone}`}
+                style={{
+                  left: `${p.left}%`,
+                  animationDelay: `${p.delay}s`,
+                  animationDuration: `${p.duration}s`,
+                  '--drift': `${p.drift}px`,
+                  '--spin': `${p.spin}deg`,
+                }}
+              />
+            ))}
+          </div>
+          <div className="egg-toast" role="status">
+            <span className="egg-toast-icon" aria-hidden="true">🎉</span>
+            <span>
+              <strong>{t('Easter egg ditemukan!', 'Easter egg found!')}</strong>
+              {t('Terima kasih sudah menjelajah sejauh ini.', 'Thanks for exploring this far.')}
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Lightbox Overlay */}
       {lightboxOpen && (
