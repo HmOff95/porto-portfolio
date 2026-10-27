@@ -28,9 +28,14 @@ html.light-mode {
     --border-light: rgba(0, 0, 0, 0.1);
 }
 
+/* Ukuran dasar 16px sampai lebar 1920px, lalu ikut membesar (2K, 4K, TV).
+   Semua ukuran berbasis rem di bawah ikut berskala dari sini. */
 html {
+    font-size: max(100%, 0.8333vw);
     scroll-behavior: smooth;
     background-color: var(--dark);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
 }
 
 body {
@@ -66,9 +71,14 @@ body {
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 75rem;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 1.25rem;
+}
+
+img,
+iframe {
+    max-width: 100%;
 }
 
 /* NAVBAR */
@@ -91,7 +101,7 @@ html.light-mode .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 20px;
+    padding: 1rem 1.25rem;
 }
 
 .nav-brand {
@@ -119,8 +129,30 @@ html.light-mode .navbar {
     text-transform: uppercase;
 }
 
+.nav-menu a {
+    position: relative;
+}
+
+.nav-menu a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 .nav-menu a:hover {
     color: var(--primary);
+}
+
+.nav-menu a:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
 }
 
 .navbar-actions {
@@ -148,6 +180,137 @@ html.light-mode .navbar {
 .language-toggle:hover,
 .theme-toggle:hover {
     box-shadow: 0 0 12px rgba(124, 58, 237, 0.3);
+    transform: translateY(-2px);
+}
+
+.language-toggle:active,
+.theme-toggle:active {
+    transform: scale(0.92);
+    transition-duration: 0.1s;
+}
+
+.language-text {
+    display: inline-block;
+    animation: langFlip 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Sun & moon orbit around a pivot below the button; the hidden one sits under it */
+.theme-orbit {
+    position: relative;
+    display: block;
+    width: 1.2em;
+    height: 1.2em;
+    transform-origin: 50% 150%;
+    transition: transform 0.55s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* THEME CIRCLE REVEAL (View Transitions) */
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
+
+::view-transition-new(root) {
+    clip-path: circle(0px at var(--theme-x, 50%) var(--theme-y, 50%));
+}
+
+/* Warna langsung berganti di dalam lingkaran, tanpa fade bawaan elemen */
+html.theme-switching *:not(.theme-orbit),
+html.theme-switching *::before,
+html.theme-switching *::after {
+    transition: none !important;
+}
+
+.theme-icon {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-icon-sun {
+    transform: translateY(2.4em) rotate(180deg);
+}
+
+@keyframes langFlip {
+    from {
+        opacity: 0;
+        transform: rotateX(90deg);
+    }
+    to {
+        opacity: 1;
+        transform: rotateX(0);
+    }
+}
+
+/* LANGUAGE SWITCH CIRCLE TRANSITION */
+.lang-wipe {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    clip-path: circle(0px at var(--wipe-x) var(--wipe-y));
+}
+
+.lang-wipe-in {
+    animation: langWipeIn 0.55s cubic-bezier(0.7, 0, 0.3, 1) forwards;
+}
+
+.lang-wipe-out {
+    animation: langWipeOut 0.55s cubic-bezier(0.7, 0, 0.3, 1) forwards;
+}
+
+.lang-wipe-label {
+    color: white;
+    font-size: clamp(2rem, 6vw, 4rem);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    animation: langLabelIn 0.45s 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.lang-wipe-out .lang-wipe-label {
+    animation: langLabelOut 0.3s ease-in forwards;
+}
+
+@keyframes langWipeIn {
+    from {
+        clip-path: circle(0px at var(--wipe-x) var(--wipe-y));
+    }
+    to {
+        clip-path: circle(var(--wipe-r) at var(--wipe-x) var(--wipe-y));
+    }
+}
+
+@keyframes langWipeOut {
+    from {
+        clip-path: circle(var(--wipe-r) at var(--wipe-x) var(--wipe-y));
+    }
+    to {
+        clip-path: circle(0px at var(--wipe-x) var(--wipe-y));
+    }
+}
+
+@keyframes langLabelIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes langLabelOut {
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
 }
 
 /* HERO SECTION */
@@ -184,8 +347,9 @@ html.light-mode .navbar {
 .hero {
     background: var(--dark);
     color: var(--text);
-    padding: 120px 20px;
+    padding: 7.5rem 1.25rem;
     min-height: 100vh;
+    min-height: 100svh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -198,8 +362,8 @@ html.light-mode .navbar {
     position: absolute;
     top: 15%;
     left: 10%;
-    width: 400px;
-    height: 400px;
+    width: 25rem;
+    height: 25rem;
     background: radial-gradient(circle, rgba(124, 58, 237, 0.15) 0%, transparent 70%);
     border-radius: 50%;
     filter: blur(80px);
@@ -213,8 +377,8 @@ html.light-mode .navbar {
     position: absolute;
     bottom: 10%;
     right: 5%;
-    width: 350px;
-    height: 350px;
+    width: 21.875rem;
+    height: 21.875rem;
     background: radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, transparent 70%);
     border-radius: 50%;
     filter: blur(80px);
@@ -224,7 +388,7 @@ html.light-mode .navbar {
 }
 
 .hero-content {
-    max-width: 800px;
+    max-width: 50rem;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -235,7 +399,7 @@ html.light-mode .navbar {
 
 .hero-content::before {
     content: "";
-    width: 50px;
+    width: 3.125rem;
     height: 2px;
     background: linear-gradient(90deg, #7C3AED, #4F46E5);
     display: block;
@@ -247,8 +411,8 @@ html.light-mode .navbar {
 }
 
 .profile-photo {
-    width: 200px;
-    height: 200px;
+    width: 12.5rem;
+    height: 12.5rem;
     border-radius: 50%;
     object-fit: cover;
     box-shadow: 0 0 40px rgba(124, 58, 237, 0.4), inset 0 0 40px rgba(124, 58, 237, 0.2);
@@ -289,7 +453,7 @@ html.light-mode .navbar {
 
 /* BUTTONS */
 .btn {
-    padding: 12px 30px;
+    padding: 0.75rem 1.875rem;
     border: none;
     border-radius: 8px;
     font-size: 1rem;
@@ -308,6 +472,53 @@ html.light-mode .navbar {
     background: #8B5CF6;
     box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
     transform: translateY(-2px);
+}
+
+/* Kilau yang menyapu tombol saat hover */
+.btn-primary::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.7s ease;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.btn-primary:hover::after {
+    left: 125%;
+}
+
+/* BUTTON INTERACTIONS */
+.btn,
+.tab-btn,
+.language-toggle,
+.theme-toggle {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.3;
+    transform: scale(0);
+    animation: ripple 0.6s ease-out forwards;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@keyframes ripple {
+    to {
+        transform: scale(1);
+        opacity: 0;
+    }
 }
 
 /* ANIMATIONS */
@@ -366,7 +577,7 @@ html.light-mode .navbar {
 
 /* ABOUT SECTION */
 .about {
-    padding: 120px 20px;
+    padding: 7.5rem 1.25rem;
     background: var(--dark-alt);
 }
 
@@ -386,7 +597,7 @@ html.light-mode .navbar {
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 50px;
+    width: 3.125rem;
     height: 3px;
     background: linear-gradient(90deg, var(--primary), var(--secondary));
 }
@@ -464,7 +675,7 @@ html.light-mode .navbar {
 
 /* EDUCATION SECTION */
 .education {
-    padding: 120px 20px;
+    padding: 7.5rem 1.25rem;
     background: var(--dark-alt);
 }
 
@@ -484,13 +695,13 @@ html.light-mode .navbar {
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 50px;
+    width: 3.125rem;
     height: 3px;
     background: linear-gradient(90deg, var(--primary), var(--secondary));
 }
 
 .education-content {
-    max-width: 900px;
+    max-width: 56.25rem;
 }
 
 .education-item {
@@ -574,7 +785,7 @@ html.light-mode .navbar {
 
 /* PROJECTS SECTION */
 .projects {
-    padding: 120px 20px;
+    padding: 7.5rem 1.25rem;
     background: var(--dark-alt);
 }
 
@@ -594,7 +805,7 @@ html.light-mode .navbar {
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 50px;
+    width: 3.125rem;
     height: 3px;
     background: linear-gradient(90deg, var(--primary), var(--secondary));
 }
@@ -608,7 +819,7 @@ html.light-mode .navbar {
 
 .projects-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(18.75rem, 100%), 1fr));
     gap: 2.5rem;
     animation: fadeIn 0.6s ease-out;
 }
@@ -629,6 +840,17 @@ html.light-mode .navbar {
     box-shadow: 0 0 25px rgba(124, 58, 237, 0.25);
     transform: translateY(-6px);
     border-top-color: #8B5CF6;
+}
+
+.project-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.project-content .btn-secondary {
+    margin-top: auto;
+    align-self: flex-start;
 }
 
 .project-content h3 {
@@ -706,20 +928,79 @@ html.light-mode .navbar {
 .project-preview {
     position: relative;
     width: 100%;
-    height: 250px;
     overflow: hidden;
-    border-radius: 6px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
     background: var(--card-bg);
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+/* Bar ala jendela browser di atas preview */
+.preview-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    height: 1.75rem;
+    padding: 0 0.7rem;
+    background: rgba(124, 58, 237, 0.08);
+    border-bottom: 1px solid var(--border);
+}
+
+.preview-bar span {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+}
+
+.preview-bar span:first-child { background: #f87171; }
+.preview-bar span:nth-child(2) { background: #fbbf24; }
+.preview-bar span:nth-child(3) { background: #34d399; }
+
+.preview-bar em {
+    flex: 1;
+    min-width: 0;
+    margin-left: 0.5rem;
+    font-style: normal;
+    font-size: 0.7rem;
+    opacity: 0.6;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Area 16:10, isinya situs versi desktop yang diperkecil */
+.preview-frame {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
 }
 
 .preview-iframe {
-    width: 200%;
-    height: 200%;
-    transform: scale(0.5);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1280px;
+    height: 800px;
+    max-width: none;
+    transform: scale(var(--preview-scale, 0.3));
     transform-origin: top left;
     border: none;
     pointer-events: none;
+}
+
+.preview-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    transition: transform 0.6s ease;
+}
+
+.project-card:hover .preview-img {
+    transform: scale(1.04);
 }
 
 .preview-overlay {
@@ -728,11 +1009,17 @@ html.light-mode .navbar {
     cursor: pointer;
 }
 
+.project-content .project-org {
+    margin-top: -0.6rem;
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
 .btn-secondary {
     background: transparent;
     border: 1px solid var(--primary);
     color: var(--primary);
-    padding: 10px 24px;
+    padding: 0.625rem 1.5rem;
     border-radius: 8px;
     font-size: 0.95rem;
     cursor: pointer;
@@ -741,10 +1028,32 @@ html.light-mode .navbar {
     font-family: 'Space Grotesk', sans-serif;
 }
 
-.btn-secondary:hover {
+/* Isi warna menyapu dari kiri saat hover */
+.btn-secondary::before {
+    content: "";
+    position: absolute;
+    inset: 0;
     background: var(--primary);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: -1;
+}
+
+.btn-secondary:hover {
     color: white;
     box-shadow: 0 0 20px rgba(124, 58, 237, 0.3);
+    transform: translateY(-2px);
+}
+
+.btn-secondary:hover::before {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+.btn:active {
+    transform: translateY(0) scale(0.96);
+    transition-duration: 0.1s;
 }
 
 /* PROJECT CAROUSEL */
@@ -892,7 +1201,7 @@ html.light-mode .navbar {
 /* CONTACT SECTION */
 .contact {
     background: var(--dark);
-    padding: 120px 20px;
+    padding: 7.5rem 1.25rem;
 }
 
 .contact h2 {
@@ -911,7 +1220,7 @@ html.light-mode .navbar {
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 50px;
+    width: 3.125rem;
     height: 3px;
     background: linear-gradient(90deg, var(--primary), var(--secondary));
 }
@@ -919,7 +1228,7 @@ html.light-mode .navbar {
 .contact-info {
     text-align: center;
     margin-bottom: 3rem;
-    max-width: 600px;
+    max-width: 37.5rem;
     margin-left: auto;
     margin-right: auto;
 }
@@ -943,7 +1252,7 @@ html.light-mode .navbar {
 }
 
 .contact-form {
-    max-width: 600px;
+    max-width: 37.5rem;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -952,7 +1261,7 @@ html.light-mode .navbar {
 
 .contact-form input,
 .contact-form textarea {
-    padding: 12px 16px;
+    padding: 0.75rem 1rem;
     border: 1px solid var(--border-light);
     border-radius: 8px;
     font-family: 'Space Grotesk', sans-serif;
@@ -974,7 +1283,7 @@ html.light-mode .navbar {
     background: var(--card-bg);
     color: var(--text);
     text-align: center;
-    padding: 2rem 20px;
+    padding: 2rem 1.25rem;
     border-top: 1px solid var(--border);
 }
 
@@ -994,8 +1303,8 @@ html.light-mode .navbar {
     }
 
     .profile-photo {
-        width: 150px;
-        height: 150px;
+        width: 9.375rem;
+        height: 9.375rem;
     }
 
     .navbar-actions {
@@ -1030,6 +1339,17 @@ html.light-mode .navbar {
     }
 }
 
+/* Tablet: menu desktop masih muat tapi perlu dirapatkan */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .nav-menu {
+        gap: 1.25rem;
+    }
+
+    .about-content {
+        gap: 2rem;
+    }
+}
+
 /* ===== HAMBURGER ===== */
 .hamburger {
   display: none;
@@ -1041,7 +1361,7 @@ html.light-mode .navbar {
   padding: 4px;
 }
 .hamburger-line {
-  width: 24px;
+  width: 1.5rem;
   height: 2px;
   background: var(--text);
   border-radius: 2px;
@@ -1062,37 +1382,91 @@ html.light-mode .navbar {
 .sidebar {
   position: fixed;
   top: 0;
-  right: -280px;
-  width: 280px;
+  right: 0;
+  width: 20rem;
+  max-width: 86vw;
   height: 100vh;
+  height: 100dvh;
   background: var(--dark);
   border-left: 1px solid var(--border);
   z-index: 1000;
-  transition: right 0.4s ease;
-  padding: 80px 2rem 2rem;
+  padding: 1rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  transform: translateX(100%);
+  visibility: hidden;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s 0.45s, box-shadow 0.45s ease;
 }
 .sidebar.sidebar-open {
-  right: 0;
+  transform: none;
+  visibility: visible;
+  box-shadow: -24px 0 60px rgba(0, 0, 0, 0.35);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s, box-shadow 0.45s ease;
+}
+/* Cahaya ungu samar di pojok atas, senada dengan aurora di hero */
+.sidebar::before {
+  content: "";
+  position: absolute;
+  top: -6rem;
+  right: -6rem;
+  width: 16rem;
+  height: 16rem;
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.18) 0%, transparent 70%);
+  pointer-events: none;
 }
 .sidebar-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   z-index: 999;
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0s 0.4s;
+}
+.sidebar-overlay.open {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.4s ease;
+}
+.sidebar-header {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
 }
 .sidebar-close {
-  position: absolute;
-  top: 1.5rem;
-  right: 1.5rem;
-  background: none;
-  border: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card-bg);
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
   color: var(--text);
-  font-size: 1.2rem;
+  font-size: 1rem;
   cursor: pointer;
-  padding: 4px 8px;
+  transition: transform 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+.sidebar-close:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+  transform: rotate(90deg);
+}
+.sidebar-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  opacity: 0.5;
+  margin-bottom: 0.5rem;
+  padding: 0 0.75rem;
 }
 .sidebar-menu {
   list-style: none;
@@ -1100,21 +1474,105 @@ html.light-mode .navbar {
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 0.25rem;
 }
-.sidebar-menu li a {
-  display: block;
-  padding: 1rem 0;
+/* Item menu masuk bergantian saat sidebar dibuka */
+.sidebar-menu li {
+  opacity: 0;
+  transform: translateX(1.5rem);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.sidebar-open .sidebar-menu li {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(0.1s + var(--i) * 0.05s);
+}
+.sidebar-menu a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 0.75rem;
+  border-radius: 10px;
   color: var(--text);
   text-decoration: none;
   font-size: 1.1rem;
   font-weight: 500;
-  border-bottom: 1px solid var(--border);
-  letter-spacing: 0.05em;
-  transition: color 0.4s ease;
+  transition: background 0.3s ease, color 0.3s ease;
 }
-.sidebar-menu li a:hover {
+.sidebar-num {
+  min-width: 1.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
   color: var(--primary);
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+}
+.sidebar-arrow {
+  margin-left: auto;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.sidebar-menu a:hover,
+.sidebar-menu a.active {
+  background: rgba(124, 58, 237, 0.1);
+  color: var(--primary);
+}
+.sidebar-menu a.active {
+  font-weight: 700;
+}
+.sidebar-menu a.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 25%;
+  bottom: 25%;
+  width: 3px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, var(--primary), var(--secondary));
+}
+.sidebar-menu a:hover .sidebar-arrow,
+.sidebar-menu a.active .sidebar-arrow {
+  opacity: 1;
+  transform: none;
+}
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+.sidebar-socials {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0 0.75rem;
+}
+.sidebar-socials a {
+  width: 2.75rem;
+  height: 2.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-light);
+  color: var(--primary);
+  transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+.sidebar-socials a:hover,
+.sidebar-socials a:active {
+  border-color: var(--primary);
+  box-shadow: 0 0 12px rgba(124, 58, 237, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Link navbar desktop untuk section yang sedang dilihat */
+.nav-menu a.active {
+  color: var(--primary);
+}
+.nav-menu a.active::after {
+  transform: scaleX(1);
 }
 
 /* ===== PREVIEW FALLBACK ===== */
@@ -1166,7 +1624,7 @@ html.light-mode .navbar {
     padding: 0 1.25rem;
   }
   .hero {
-    padding-top: 100px;
+    padding-top: 6.25rem;
   }
   .location-badges {
     flex-wrap: wrap;
@@ -1174,14 +1632,17 @@ html.light-mode .navbar {
     gap: 0.5rem;
   }
   .profile-photo {
-    width: 150px;
-    height: 150px;
+    width: 9.375rem;
+    height: 9.375rem;
   }
   .about, .education, .projects, .contact {
-    padding: 80px 20px;
+    padding: 5rem 1.25rem;
   }
   .preview-fallback {
     display: block;
+  }
+  .tab-btn {
+    padding: 0.75rem 1rem;
   }
 }
 
@@ -1236,9 +1697,15 @@ html.light-mode .navbar {
   border: 1px solid rgba(247, 223, 30, 0.3);
 }
 
+.tag-next {
+  background: var(--border);
+  color: var(--text);
+  border: 1px solid var(--border-light);
+}
+
 /* ===== EXPERIENCE SECTION ===== */
 .experience {
-    padding: 120px 20px;
+    padding: 7.5rem 1.25rem;
     background: var(--dark-alt);
 }
 
@@ -1258,7 +1725,7 @@ html.light-mode .navbar {
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 50px;
+    width: 3.125rem;
     height: 3px;
     background: linear-gradient(90deg, var(--primary), var(--secondary));
 }
@@ -1269,6 +1736,18 @@ html.light-mode .navbar {
     gap: 0;
     margin-bottom: 2rem;
     border-bottom: 1px solid var(--border-light);
+    position: relative;
+}
+
+.tab-indicator {
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    height: 2px;
+    width: 0;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    border-radius: 2px;
+    transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1), width 0.5s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 .tab-btn {
@@ -1287,16 +1766,76 @@ html.light-mode .navbar {
 
 .tab-btn:hover {
     color: var(--primary);
+    background: rgba(124, 58, 237, 0.06);
 }
 
 .tab-btn.active {
     color: var(--primary);
-    border-bottom-color: var(--primary);
     font-weight: 700;
 }
 
 .experience-content {
-    max-width: 900px;
+    max-width: 56.25rem;
+    transition: height 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* Transisi antar tab Magang <-> PKL */
+.tab-exit-next {
+    animation: tabExitToLeft 0.3s ease-in forwards;
+}
+
+.tab-exit-prev {
+    animation: tabExitToRight 0.3s ease-in forwards;
+}
+
+.tab-enter-next {
+    animation: tabEnterFromRight 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.tab-enter-prev {
+    animation: tabEnterFromLeft 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes tabExitToLeft {
+    to {
+        opacity: 0;
+        transform: translateX(-40px);
+        filter: blur(4px);
+    }
+}
+
+@keyframes tabExitToRight {
+    to {
+        opacity: 0;
+        transform: translateX(40px);
+        filter: blur(4px);
+    }
+}
+
+@keyframes tabEnterFromRight {
+    from {
+        opacity: 0;
+        transform: translateX(40px);
+        filter: blur(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+        filter: blur(0);
+    }
+}
+
+@keyframes tabEnterFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-40px);
+        filter: blur(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+        filter: blur(0);
+    }
 }
 
 /* EXPERIENCE CARD DETAILS */
@@ -1339,8 +1878,8 @@ html.light-mode .navbar {
 
 .experience-doc-img {
   width: 100%;
-  max-width: 380px;
-  max-height: 240px;
+  max-width: 23.75rem;
+  max-height: 15rem;
   object-fit: cover;
   object-position: top;
   border-radius: 8px;
@@ -1353,6 +1892,45 @@ html.light-mode .navbar {
 .experience-doc-img:hover {
   opacity: 0.85;
   transform: scale(1.02);
+}
+
+.experience-shot {
+  margin: 1.25rem 0 0;
+  max-width: 26.25rem;
+}
+
+.experience-shot-link {
+  display: block;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.experience-shot-link:hover {
+  border-color: var(--primary);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(124, 58, 237, 0.25);
+}
+
+.experience-shot-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.experience-shot-caption {
+  margin-top: 0.6rem;
+  font-size: 0.8rem;
+  color: var(--text);
+  opacity: 0.7;
+}
+
+@media (max-width: 768px) {
+  .experience-shot {
+    max-width: none;
+  }
 }
 
 /* LIGHTBOX */
@@ -1400,11 +1978,12 @@ html.light-mode .navbar {
   cursor: pointer;
   line-height: 1;
   opacity: 0.8;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s, transform 0.3s ease;
 }
 
 .lightbox-close:hover {
   opacity: 1;
+  transform: rotate(90deg);
 }
 
 .contact-tagline {
@@ -1427,12 +2006,13 @@ html.light-mode .navbar {
   text-decoration: none;
   font-size: 0.95rem;
   font-weight: 500;
-  transition: color 0.2s ease;
+  transition: color 0.2s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   width: fit-content;
 }
 
 .contact-link:hover {
   color: var(--primary);
+  transform: translateX(6px);
 }
 
 .contact-link svg {
@@ -1442,4 +2022,544 @@ html.light-mode .navbar {
 
 .contact-info {
   text-align: left !important;
+}
+
+.contact-link-icon {
+  display: inline-flex;
+}
+
+.contact-link-name {
+  display: none;
+}
+
+/* Titik carousel proyek hanya dipakai di HP */
+.projects-dots {
+  display: none;
+}
+
+/* ===== MOBILE: SECTION LAYOUT ===== */
+@media (max-width: 768px) {
+  .about, .education, .experience, .projects, .contact {
+    padding: 4.5rem 1.25rem;
+  }
+
+  .about h2,
+  .education h2,
+  .experience h2,
+  .projects h2,
+  .contact h2 {
+    font-size: 1.85rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+  }
+
+  /* Geser masuk dari samping bikin layar sempit "goyang", jadi di HP cukup naik dari bawah */
+  .reveal-left.is-visible,
+  .reveal-right.is-visible {
+    animation-name: revealUp;
+  }
+
+  /* Efek hover tertinggal setelah disentuh di layar sentuh */
+  .skill-category-compact:hover,
+  .project-card:hover {
+    transform: none;
+  }
+
+  /* Tentang Saya */
+  .about-content {
+    gap: 2.5rem;
+  }
+
+  .about-text p {
+    font-size: 1rem;
+    line-height: 1.75;
+    margin-bottom: 1.1rem;
+  }
+
+  .skills h3 {
+    font-size: 1.15rem;
+    margin-bottom: 1rem;
+  }
+
+  .skill-category-compact {
+    padding: 1.1rem 1.25rem;
+    border-left: 3px solid var(--primary);
+  }
+
+  .skill-category-compact h4 {
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.75;
+    margin-bottom: 0.75rem;
+  }
+
+  .skill-badge-compact {
+    font-size: 0.8rem;
+    padding: 0.35rem 0.75rem;
+  }
+
+  /* Pendidikan */
+  .education-item {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .education-header {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .education-header h3 {
+    font-size: 1.15rem;
+    line-height: 1.35;
+  }
+
+  .period {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.75rem;
+  }
+
+  .education-period {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--primary);
+  }
+
+  .institution {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    opacity: 0.85;
+  }
+
+  .education-details li {
+    font-size: 0.95rem;
+    line-height: 1.65;
+  }
+
+  .gpa-badge {
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+  }
+
+  /* Pengalaman: dua tab berbagi lebar agar label panjang tidak meluber */
+  .tab-btn {
+    flex: 1;
+    padding: 0.75rem 0.5rem;
+    font-size: 0.9rem;
+    line-height: 1.3;
+  }
+
+  /* Proyek: carousel geser horizontal, kartu berikutnya sedikit terlihat */
+  .projects-grid {
+    position: relative;
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 1.25rem;
+    margin: 0 -1.25rem;
+    padding: 0.5rem 1.25rem 1rem;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .projects-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .project-card {
+    flex: 0 0 86%;
+    scroll-snap-align: center;
+    padding: 1rem;
+  }
+
+  /* Kartu di luar layar tidak pernah "terlihat" oleh observer, jadi tampilkan langsung */
+  .projects-grid .reveal {
+    opacity: 1;
+  }
+
+  .projects-grid .reveal.is-visible {
+    animation: none;
+  }
+
+  .project-content h3 {
+    font-size: 1.1rem;
+    line-height: 1.35;
+    margin-bottom: 0.6rem;
+  }
+
+  .project-content .project-org {
+    margin-top: -0.3rem;
+  }
+
+  .project-content p {
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+
+  .project-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .project-content .btn-secondary {
+    margin-top: auto;
+    width: 100%;
+    min-height: 2.75rem;
+  }
+
+  .preview-fallback {
+    top: auto;
+    left: auto;
+    right: 0.6rem;
+    bottom: 0.6rem;
+    transform: none;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(10, 10, 15, 0.7);
+    backdrop-filter: blur(6px);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .projects-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  .projects-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    padding: 0;
+    border: none;
+    border-radius: 999px;
+    background: rgba(124, 58, 237, 0.3);
+    cursor: pointer;
+    transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1), background 0.35s ease;
+  }
+
+  .projects-dot.active {
+    width: 1.5rem;
+    background: var(--primary);
+  }
+
+  /* Hubungi Saya: link jadi kartu yang mudah disentuh */
+  .contact-info {
+    margin-bottom: 2rem;
+  }
+
+  .contact-info p {
+    font-size: 1rem;
+  }
+
+  .contact-links {
+    gap: 0.75rem;
+    margin-bottom: 0;
+  }
+
+  .contact-info .contact-link {
+    width: 100%;
+    gap: 0.9rem;
+    padding: 0.85rem 1rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .contact-link:hover {
+    transform: none;
+  }
+
+  .contact-link:active {
+    transform: scale(0.98);
+    border-color: var(--primary);
+  }
+
+  .contact-link::after {
+    content: "→";
+    margin-left: auto;
+    color: var(--primary);
+  }
+
+  .contact-link-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: rgba(124, 58, 237, 0.12);
+  }
+
+  .contact-link-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+
+  .contact-link-name {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+
+  .contact-form {
+    padding: 1.25rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+
+  .contact-form input,
+  .contact-form textarea {
+    background: var(--dark);
+    font-size: 1rem;
+  }
+
+  .contact-form textarea {
+    resize: vertical;
+  }
+
+  .contact-form .btn {
+    width: 100%;
+    min-height: 3rem;
+  }
+}
+
+/* ===== SCROLL ANIMATIONS ===== */
+section[id] {
+  scroll-margin-top: 4.5rem;
+}
+
+/* Pakai properti translate (bukan transform) supaya tidak bentrok dengan transform saat hover */
+.reveal {
+  opacity: 0;
+}
+
+.reveal.is-visible {
+  animation: revealUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0s) both;
+}
+
+.reveal-left.is-visible {
+  animation-name: revealLeft;
+}
+
+.reveal-right.is-visible {
+  animation-name: revealRight;
+}
+
+@keyframes revealUp {
+  from {
+    opacity: 0;
+    translate: 0 40px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes revealLeft {
+  from {
+    opacity: 0;
+    translate: -50px 0;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes revealRight {
+  from {
+    opacity: 0;
+    translate: 50px 0;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+/* Indikator "scroll ke bawah" di hero */
+.scroll-cue {
+  position: absolute;
+  bottom: 2rem;
+  left: 0;
+  right: 0;
+  width: fit-content;
+  margin: 0 auto;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--primary);
+  opacity: 0.8;
+  animation: fadeIn 0.8s 0.8s ease-out both;
+  transition: opacity 0.3s ease;
+}
+
+.scroll-cue:hover {
+  opacity: 1;
+}
+
+.scroll-cue-mouse {
+  width: 1.5rem;
+  height: 2.375rem;
+  border: 2px solid currentColor;
+  border-radius: 14px;
+  display: flex;
+  justify-content: center;
+  padding-top: 6px;
+}
+
+.scroll-cue-wheel {
+  width: 4px;
+  height: 8px;
+  border-radius: 2px;
+  background: currentColor;
+  animation: scrollWheel 1.6s ease-in-out infinite;
+}
+
+.scroll-cue-arrow {
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  animation: scrollArrow 1.6s ease-in-out infinite;
+}
+
+@keyframes scrollWheel {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  70% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scrollArrow {
+  0%, 100% {
+    opacity: 0.3;
+    transform: rotate(45deg) translate(0, 0);
+  }
+  50% {
+    opacity: 1;
+    transform: rotate(45deg) translate(4px, 4px);
+  }
+}
+
+/* Versi layar sentuh: disembunyikan di perangkat bermouse */
+.scroll-cue-touch,
+.scroll-cue-label {
+  display: none;
+}
+
+.scroll-cue-touch {
+  position: relative;
+  width: 1.75rem;
+  height: 2.75rem;
+}
+
+.scroll-cue-finger {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  animation: swipeFinger 1.8s ease-in-out infinite;
+}
+
+.scroll-cue-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+@keyframes swipeFinger {
+  0% {
+    opacity: 0;
+    transform: translateY(0.6rem);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(0.6rem);
+  }
+  65% {
+    opacity: 1;
+    transform: translateY(-0.4rem);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-0.4rem);
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .scroll-cue {
+    bottom: calc(1.5rem + env(safe-area-inset-bottom));
+    gap: 0.3rem;
+  }
+
+  .scroll-cue-mouse,
+  .scroll-cue-arrow {
+    display: none;
+  }
+
+  .scroll-cue-touch,
+  .scroll-cue-label {
+    display: block;
+  }
+}
+
+@media (max-height: 600px) {
+  .scroll-cue {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+  }
+
+  .reveal.is-visible,
+  .scroll-cue-wheel,
+  .scroll-cue-arrow,
+  .scroll-cue-finger,
+  .language-text,
+  .ripple {
+    animation: none;
+  }
+
+  .theme-orbit {
+    transition: none;
+  }
+
+  .experience-content {
+    transition: none;
+  }
 }

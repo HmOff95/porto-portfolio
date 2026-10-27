@@ -10,8 +10,6 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata = {
   title: 'Muhammad Haikal Mahardika — Portfolio',
   description: 'Portfolio of Muhammad Haikal Mahardika — Software Engineer & Fullstack Developer from Samarinda, Indonesia.',
-  charset: 'UTF-8',
-  viewport: 'width=device-width, initial-scale=1.0',
   openGraph: {
     title: 'Muhammad Haikal Mahardika — Portfolio',
     description: 'Software Engineer & Fullstack Developer from Samarinda, Indonesia.',
@@ -20,6 +18,12 @@ export const metadata = {
   icons: {
     icon: '/favicon.svg',
   },
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({ children }) {
