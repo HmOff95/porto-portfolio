@@ -688,14 +688,7 @@ export default function Home() {
                       <span></span><span></span><span></span>
                       <em>sistem-klasifikasi-informasi.vercel.app</em>
                     </span>
-                    <img
-                      src="/Prop/klasifikasi-ppid.webp"
-                      alt={t('Tampilan beranda Sistem Klasifikasi Informasi Publik PPID Kota Samarinda', 'Homepage of the Samarinda City PPID Public Information Classification System')}
-                      width="1280"
-                      height="800"
-                      loading="lazy"
-                      className="exp-img"
-                    />
+                    <PreviewFrame src="https://sistem-klasifikasi-informasi.vercel.app/" />
                   </a>
                   <figcaption>{t('Kunjungi situs ↗', 'Visit site ↗')}</figcaption>
                 </figure>
