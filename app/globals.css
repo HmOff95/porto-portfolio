@@ -303,6 +303,7 @@ html.theme-switching *::after {
 }
 
 /* LANGUAGE SWITCH CIRCLE TRANSITION */
+/* Lingkaran dianimasikan lewat transform (bukan clip-path) agar berjalan di compositor — clip-path patah-patah di iOS Safari */
 .lang-wipe {
     position: fixed;
     inset: 0;
@@ -310,45 +311,58 @@ html.theme-switching *::after {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-    clip-path: circle(0px at var(--wipe-x) var(--wipe-y));
+    overflow: hidden;
 }
 
-.lang-wipe-in {
+.lang-wipe-circle {
+    position: absolute;
+    left: calc(var(--wipe-x) - var(--wipe-r));
+    top: calc(var(--wipe-y) - var(--wipe-r));
+    width: calc(var(--wipe-r) * 2);
+    height: calc(var(--wipe-r) * 2);
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    transform: scale(0);
+    will-change: transform;
+    backface-visibility: hidden;
+}
+
+.lang-wipe-in .lang-wipe-circle {
     animation: langWipeIn 0.55s cubic-bezier(0.7, 0, 0.3, 1) forwards;
 }
 
-.lang-wipe-out {
+.lang-wipe-out .lang-wipe-circle {
     animation: langWipeOut 0.55s cubic-bezier(0.7, 0, 0.3, 1) forwards;
 }
 
 .lang-wipe-label {
+    position: relative;
     color: white;
     font-size: clamp(2rem, 6vw, 4rem);
     font-weight: 700;
     letter-spacing: 0.02em;
-    animation: langLabelIn 0.45s 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: langLabelIn 0.4s 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .lang-wipe-out .lang-wipe-label {
-    animation: langLabelOut 0.3s ease-in forwards;
+    animation: langLabelOut 0.2s ease-in forwards;
 }
 
 @keyframes langWipeIn {
     from {
-        clip-path: circle(0px at var(--wipe-x) var(--wipe-y));
+        transform: scale(0);
     }
     to {
-        clip-path: circle(var(--wipe-r) at var(--wipe-x) var(--wipe-y));
+        transform: scale(1);
     }
 }
 
 @keyframes langWipeOut {
     from {
-        clip-path: circle(var(--wipe-r) at var(--wipe-x) var(--wipe-y));
+        transform: scale(1);
     }
     to {
-        clip-path: circle(0px at var(--wipe-x) var(--wipe-y));
+        transform: scale(0);
     }
 }
 

@@ -1094,6 +1094,7 @@ export default function Home() {
           style={{ '--wipe-x': `${langWipe.x}px`, '--wipe-y': `${langWipe.y}px`, '--wipe-r': `${langWipe.r}px` }}
           aria-hidden="true"
         >
+          <span className="lang-wipe-circle" />
           <span className="lang-wipe-label">{langWipe.label}</span>
         </div>
       )}
