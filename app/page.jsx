@@ -32,6 +32,8 @@ const PREVIEW_VIEWPORT = 1280;
 
 function PreviewFrame({ src }) {
   const boxRef = useRef(null);
+  // Iframe baru dipasang saat kartu mendekati layar, supaya tidak ikut membebani muatan awal
+  const [isNear, setIsNear] = useState(false);
 
   useEffect(() => {
     const box = boxRef.current;
@@ -40,12 +42,24 @@ function PreviewFrame({ src }) {
       box.style.setProperty('--preview-scale', entry.contentRect.width / PREVIEW_VIEWPORT);
     });
     ro.observe(box);
-    return () => ro.disconnect();
+    const io = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setIsNear(true);
+        io.disconnect();
+      }
+    }, { rootMargin: '300px' });
+    io.observe(box);
+    return () => {
+      ro.disconnect();
+      io.disconnect();
+    };
   }, []);
 
   return (
     <div className="preview-frame" ref={boxRef}>
-      <iframe src={src} scrolling="no" tabIndex="-1" loading="lazy" className="preview-iframe" aria-hidden="true" />
+      {isNear && (
+        <iframe src={src} scrolling="no" tabIndex="-1" loading="lazy" className="preview-iframe" aria-hidden="true" />
+      )}
     </div>
   );
 }
@@ -602,6 +616,7 @@ export default function Home() {
         </div>
       </aside>
 
+      <main>
       {/* Hero Section */}
       <section id="home" className="hero">
         <div className="hero-grid" aria-hidden="true"></div>
@@ -652,7 +667,15 @@ export default function Home() {
 
           <div className="hero-visual fade-in delay-1">
             <div className="hero-photo-frame">
-              <img src="/Prop/haikal_no_bg.png" alt="Muhammad Haikal Mahardika, S.Kom" className="hero-photo" />
+              <img
+                src="/Prop/haikal_no_bg.webp"
+                alt="Muhammad Haikal Mahardika, S.Kom"
+                width="800"
+                height="1199"
+                fetchPriority="high"
+                decoding="async"
+                className="hero-photo"
+              />
             </div>
             <span className="hero-chip hero-chip-top" aria-hidden="true">⚡ Fullstack</span>
             <span className="hero-chip hero-chip-bottom" aria-hidden="true">{'</>'} Python · JavaScript</span>
@@ -973,6 +996,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      </main>
 
       {/* Footer */}
       <footer className="footer">
