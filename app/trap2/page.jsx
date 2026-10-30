@@ -40,7 +40,7 @@ export default function Trap2() {
   return (
     <html lang="en">
       <head>
-        <title>Muhammad Haikal Mahardika — Portfolio</title>
+        <title>Muhammad Haikal Mahardika, S.Kom — Portfolio</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <style>{`
           * {
@@ -245,7 +245,7 @@ export default function Trap2() {
 
         <div className="container">
           <div className="hero">
-            <h2>Muhammad Haikal Mahardika</h2>
+            <h2>Muhammad Haikal Mahardika, S.Kom</h2>
             <p>Software Engineer | Full Stack Developer</p>
             <div>
               <span className="badge">💻 Web Development</span>
@@ -286,7 +286,7 @@ export default function Trap2() {
           </section>
 
           <footer>
-            <p>&copy; 2025 Muhammad Haikal Mahardika. All rights reserved.</p>
+            <p>&copy; 2025 Muhammad Haikal Mahardika, S.Kom. All rights reserved.</p>
           </footer>
         </div>
       </body>

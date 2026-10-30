@@ -621,7 +621,7 @@ export default function Home() {
 
             <h1 className="hero-name fade-in delay-1">
               <span className="hero-greeting">{t('Halo, saya', 'Hi, I\'m')}</span>
-              Muhammad <span className="hero-name-accent">Haikal</span> Mahardika
+              Muhammad <span className="hero-name-accent">Haikal</span> Mahardika, S.Kom
             </h1>
 
             <p className="hero-role fade-in delay-1">
@@ -652,7 +652,7 @@ export default function Home() {
 
           <div className="hero-visual fade-in delay-1">
             <div className="hero-photo-frame">
-              <img src="/Prop/haikal_no_bg.png" alt="Muhammad Haikal Mahardika" className="hero-photo" />
+              <img src="/Prop/haikal_no_bg.png" alt="Muhammad Haikal Mahardika, S.Kom" className="hero-photo" />
             </div>
             <span className="hero-chip hero-chip-top" aria-hidden="true">⚡ Fullstack</span>
             <span className="hero-chip hero-chip-bottom" aria-hidden="true">{'</>'} Python · JavaScript</span>
@@ -1016,7 +1016,7 @@ export default function Home() {
           </div>
 
           <div className="footer-bottom">
-            <p>&copy; 2026 Muhammad Haikal Mahardika. {t('Semua hak dilindungi.', 'All rights reserved.')}</p>
+            <p>&copy; 2026 Muhammad Haikal Mahardika, S.Kom. {t('Semua hak dilindungi.', 'All rights reserved.')}</p>
             <p className="footer-hint">{t('Ada rahasia kecil di halaman ini', 'There\'s a little secret on this page')} <span aria-hidden="true">👀</span></p>
           </div>
         </div>

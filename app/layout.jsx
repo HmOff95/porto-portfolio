@@ -8,10 +8,10 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata = {
-  title: 'Muhammad Haikal Mahardika — Portfolio',
-  description: 'Portfolio of Muhammad Haikal Mahardika — Software Engineer & Fullstack Developer from Samarinda, Indonesia.',
+  title: 'Muhammad Haikal Mahardika, S.Kom — Portfolio',
+  description: 'Portfolio of Muhammad Haikal Mahardika, S.Kom — Software Engineer & Fullstack Developer from Samarinda, Indonesia.',
   openGraph: {
-    title: 'Muhammad Haikal Mahardika — Portfolio',
+    title: 'Muhammad Haikal Mahardika, S.Kom — Portfolio',
     description: 'Software Engineer & Fullstack Developer from Samarinda, Indonesia.',
     type: 'website',
   },
